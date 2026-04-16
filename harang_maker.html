@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>하랑이메이커 🌸</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700;800&display=swap');
+
+:root {
+  --pink:#ffb6c1; --pink-dark:#ff7da1; --pink-light:#fff0f5;
+  --purple:#c9b1ff; --purple-dark:#9b7fe8; --purple-light:#f3eeff;
+  --yellow:#fff3b0; --green:#b8f0b8; --mint:#b2ebe0;
+  --bg:#fff8fb; --text:#4a3f5c; --card:#ffffff;
+  --shadow:0 4px 18px rgba(200,130,170,0.18); --radius:18px;
+  --red:#ff6b6b; --orange:#ffa94d;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Nanum Gothic',sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;
+}
+h2{font-size:22px;font-weight:800;color:var(--purple-dark);margin-bottom:6px;}
+
+/* ── 버튼 ── */
+.btn{
+  display:inline-block;padding:11px 24px;border-radius:50px;
+  border:none;cursor:pointer;font-size:14px;font-weight:700;
+  font-family:'Nanum Gothic',sans-serif;
+  transition:all .18s;box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.07);}
+.btn:active{transform:translateY(0);}
+.btn-pink{background:var(--pink-dark);color:#fff;}
+.btn-purple{background:var(--purple-dark);color:#fff;}
+.btn-green{background:#5cc87a;color:#fff;}
+.btn-gray{background:#ddd;color:#666;}
+.btn-small{padding:7px 16px;font-size:12px;}
+.btn-red{background:var(--red);color:#fff;}
+
+/* ── 화면 ── */
+.screen{display:none;}
+.screen.active{display:flex;flex-direction:column;align-items:center;}
+
+/* ══════════════════════════════
+   타이틀 화면
+══════════════════════════════ */
+#screen-title{
+  justify-content:center;min-height:100vh;
+  background:linear-gradient(135deg,#ffe4f0 0%,#f5e4ff 50%,#e4f0ff 100%);
+}
+.title-box{
+  text-align:center;padding:44px 36px;
+  background:rgba(255,255,255,.92);border-radius:32px;
+  box-shadow:0 8px 40px rgba(200,130,170,.25);
+  max-width:400px;width:92%;
+}
+.title-stars{font-size:22px;letter-spacing:4px;margin-bottom:10px;animation:twinkle 2.5s infinite;}
+@keyframes twinkle{0%,100%{opacity:1;}50%{opacity:.5;}}
+.title-logo{font-size:72px;margin-bottom:10px;animation:bounce 2s infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+.title-name{
+  font-family:'Gaegu',cursive;
+  font-size:42px;font-weight:700;
+  background:linear-gradient(90deg,#ff6b9d,#a855f7,#3b82f6);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:4px;
+}
+.title-sub{font-size:13px;color:#aaa;margin-bottom:6px;}
+.title-sub2{font-size:12px;color:#c9a0dc;margin-bottom:28px;font-weight:700;}
+.title-btns{display:flex;flex-direction:column;gap:13px;}
+
+/* ══════════════════════════════
+   앨범 화면
+══════════════════════════════ */
+#screen-album{
+  min-height:100vh;padding:28px 16px 40px;gap:14px;
+  background:linear-gradient(135deg,#ffe4f0,#f0e4ff);
+}
+.album-header{text-align:center;}
+.album-count-badge{
+  display:inline-block;background:var(--pink-dark);color:#fff;
+  padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;margin-top:4px;
+}
+.album-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:11px;width:100%;max-width:680px;
+}
+.album-card{
+  background:#fff;border-radius:16px;padding:14px 8px;text-align:center;
+  box-shadow:var(--shadow);min-height:108px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:transform .18s;cursor:default;
+}
+.album-card:hover{transform:translateY(-3px);}
+.album-card.locked{filter:grayscale(1);opacity:.38;}
+.album-card .end-icon{font-size:30px;margin-bottom:6px;}
+.album-card .end-name{font-size:11px;font-weight:700;line-height:1.4;}
+.album-card .end-rare{font-size:10px;color:#bbb;margin-top:3px;}
+.album-card.unlocked .end-rare{color:#ff7da1;}
+
+/* ══════════════════════════════
+   게임 화면
+══════════════════════════════ */
+#screen-game{
+  min-height:100vh;padding:0;
+  background:var(--bg);align-items:stretch;
+}
+.game-wrap{
+  display:flex;flex-direction:column;
+  width:100%;max-width:560px;margin:0 auto;
+  padding:14px 14px 30px;gap:10px;
+}
+
+/* 상단바 */
+.top-bar{
+  background:linear-gradient(90deg,var(--pink-dark),var(--purple-dark));
+  color:#fff;border-radius:var(--radius);padding:11px 18px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:13px;font-weight:700;
+}
+
+/* 상태이상 배너 */
+.ailment-banner{
+  background:#fff3cd;border:2px solid #ffc107;
+  border-radius:12px;padding:9px 14px;
+  font-size:12px;font-weight:700;color:#856404;display:none;
+}
+.ailment-banner.show{display:block;}
+
+/* 캐릭터 카드 */
+.char-card{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:14px;
+  display:flex;gap:14px;align-items:center;
+}
+.char-avatar-wrap{position:relative;flex-shrink:0;}
+.char-avatar{
+  width:88px;height:88px;border-radius:50%;
+  background:linear-gradient(135deg,#ffe4f0,#f0e4ff);
+  display:flex;align-items:center;justify-content:center;
+  font-size:46px;border:3px solid var(--pink-dark);
+  transition:all .3s;
+}
+.avatar-badge{
+  position:absolute;bottom:-2px;right:-2px;
+  background:var(--red);color:#fff;font-size:9px;
+  padding:2px 6px;border-radius:20px;font-weight:700;display:none;
+}
+.avatar-badge.show{display:block;}
+.char-info{flex:1;}
+.char-name{font-size:17px;font-weight:800;color:var(--purple-dark);}
+.char-age{font-size:11px;color:#bbb;margin-top:1px;margin-bottom:5px;}
+.char-monologue{
+  font-size:12px;color:#777;font-style:italic;
+  background:var(--pink-light);border-radius:10px;
+  padding:7px 11px;line-height:1.6;min-height:38px;
+}
+
+/* 주차 진행 */
+.week-card{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:11px 14px;
+}
+.week-label{font-size:11px;color:#aaa;font-weight:700;margin-bottom:8px;}
+.week-days{display:flex;gap:5px;justify-content:center;}
+.day-dot{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;background:#f0f0f0;color:#aaa;
+  transition:all .2s;
+}
+.day-dot.done{background:var(--pink-dark);color:#fff;}
+.day-dot.today{background:var(--purple-dark);color:#fff;box-shadow:0 0 0 3px #d9c4ff;}
+.day-dot.weekend{background:var(--yellow);color:#aaa;}
+.day-dot.today.weekend{background:#ffc857;color:#fff;box-shadow:0 0 0 3px #ffe4a0;}
+
+/* 스탯 카드 */
+.stat-card{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:13px 15px;
+}
+.stat-card-title{font-size:12px;font-weight:700;color:#bbb;margin-bottom:10px;}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.stat-row{display:flex;align-items:center;gap:6px;}
+.stat-label{font-size:11px;width:40px;flex-shrink:0;font-weight:700;color:var(--text);}
+.stat-bar-wrap{flex:1;background:#f0f0f0;border-radius:10px;height:7px;overflow:hidden;}
+.stat-bar{height:100%;border-radius:10px;transition:width .4s ease;}
+.stat-val{font-size:11px;width:24px;text-align:right;font-weight:700;}
+.stress-row{
+  margin-top:10px;padding-top:9px;border-top:1px solid #f5f5f5;
+  display:flex;align-items:center;gap:7px;
+}
+.stress-label{font-size:11px;font-weight:700;color:var(--red);width:56px;flex-shrink:0;}
+.stress-bar-wrap{flex:1;background:#ffe0e0;border-radius:10px;height:9px;overflow:hidden;}
+.stress-bar{height:100%;border-radius:10px;background:linear-gradient(90deg,#ffb347,var(--red));transition:width .4s;}
+.stress-val{font-size:11px;font-weight:700;color:var(--red);width:24px;text-align:right;}
+
+/* 액션 카드 */
+.action-card{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:13px 14px;
+}
+.action-tabs{display:flex;gap:7px;margin-bottom:11px;}
+.tab-btn{
+  flex:1;padding:8px;border-radius:11px;
+  border:2px solid transparent;background:#f5f5f5;
+  font-size:12px;font-weight:700;cursor:pointer;
+  font-family:'Nanum Gothic',sans-serif;
+  transition:all .18s;
+}
+.tab-btn.active{background:var(--pink-dark);color:#fff;border-color:var(--pink-dark);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.action-list{
+  display:flex;flex-direction:column;gap:7px;
+  max-height:240px;overflow-y:auto;
+}
+.action-list::-webkit-scrollbar{width:4px;}
+.action-list::-webkit-scrollbar-thumb{background:var(--pink);border-radius:10px;}
+.action-item{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--pink-light);border-radius:12px;padding:9px 12px;
+  cursor:pointer;transition:all .18s;border:2px solid transparent;
+}
+.action-item:hover{border-color:var(--pink-dark);transform:translateX(3px);}
+.action-item.locked{opacity:.4;cursor:not-allowed;background:#f5f5f5;}
+.action-item.locked:hover{transform:none;border-color:transparent;}
+.ai-left{flex:1;}
+.ai-name{font-size:13px;font-weight:700;}
+.ai-info{font-size:10px;color:#999;margin-top:2px;line-height:1.4;}
+.ai-reward{font-size:12px;font-weight:700;color:var(--purple-dark);white-space:nowrap;margin-left:8px;}
+.ai-reward.cost{color:var(--red);}
+.ai-reward.free{color:#5cc87a;}
+
+/* 주말 안내 */
+.weekend-notice{
+  background:var(--yellow);border-radius:12px;padding:10px 14px;
+  font-size:12px;font-weight:700;color:#856404;text-align:center;display:none;
+}
+.weekend-notice.show{display:block;}
+
+/* 로그 카드 */
+.log-card{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:11px 14px;
+  max-height:115px;overflow-y:auto;
+}
+.log-card::-webkit-scrollbar{width:4px;}
+.log-card::-webkit-scrollbar-thumb{background:var(--pink);border-radius:10px;}
+.log-item{
+  font-size:11px;color:#888;padding:3px 0;
+  border-bottom:1px solid #f8f8f8;line-height:1.5;
+}
+.log-item.good{color:#5cc87a;}
+.log-item.bad{color:var(--red);}
+.log-item.event{color:var(--purple-dark);font-weight:700;}
+
+/* 저장 버튼 행 */
+.save-row{display:flex;gap:8px;justify-content:center;}
+
+/* ══════════════════════════════
+   엔딩 화면
+══════════════════════════════ */
+#screen-ending{
+  min-height:100vh;justify-content:center;padding:30px 16px;
+  background:linear-gradient(135deg,#ffe4f0,#f0e4ff);
+}
+.ending-box{
+  background:#fff;border-radius:32px;padding:36px 26px;
+  max-width:420px;width:100%;text-align:center;
+  box-shadow:0 8px 40px rgba(200,130,170,.3);
+}
+.ending-fireworks{font-size:28px;letter-spacing:6px;margin-bottom:10px;animation:pop 1s infinite alternate;}
+@keyframes pop{from{transform:scale(1);}to{transform:scale(1.15);}}
+.ending-icon-big{font-size:76px;margin-bottom:14px;}
+.ending-title{font-size:26px;font-weight:800;color:var(--purple-dark);margin-bottom:6px;}
+.ending-sub{font-size:12px;color:#ffadc5;font-weight:700;margin-bottom:14px;}
+.ending-desc{font-size:13px;color:#666;line-height:1.9;margin-bottom:18px;}
+.ending-stats{
+  text-align:left;background:var(--pink-light);
+  border-radius:14px;padding:13px;margin-bottom:20px;
+}
+.ending-stats p{font-size:12px;margin-bottom:4px;}
+.ending-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+
+/* ══════════════════════════════
+   모달
+══════════════════════════════ */
+.modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.55);z-index:999;
+  align-items:center;justify-content:center;
+  padding:16px;
+}
+.modal-overlay.show{display:flex;}
+.modal-box{
+  background:#fff;border-radius:26px;padding:28px 22px;
+  max-width:380px;width:100%;
+  box-shadow:0 8px 50px rgba(0,0,0,.22);text-align:center;
+  animation:popIn .25s ease;max-height:90vh;overflow-y:auto;
+}
+@keyframes popIn{from{transform:scale(.82);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal-icon{font-size:50px;margin-bottom:10px;}
+.modal-title{font-size:17px;font-weight:800;margin-bottom:8px;color:var(--purple-dark);white-space:pre-wrap;}
+.modal-desc{font-size:13px;color:#666;line-height:1.8;margin-bottom:10px;white-space:pre-wrap;}
+.modal-result{
+  font-size:13px;font-weight:700;color:#333;
+  line-height:1.9;margin-bottom:14px;white-space:pre-wrap;
+  display:none;background:var(--purple-light);
+  border-radius:10px;padding:10px;
+}
+.modal-btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+
+/* ── 토스트 ── */
+@keyframes fadeInOut{
+  0%{opacity:0;transform:translateX(-50%) translateY(-8px);}
+  15%{opacity:1;transform:translateX(-50%) translateY(0);}
+  80%{opacity:1;}
+  100%{opacity:0;transform:translateX(-50%) translateY(-8px);}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ 타이틀 ══ -->
+<div id="screen-title" class="screen active">
+  <div class="title-box">
+    <div class="title-stars">⭐🌟✨🌟⭐</div>
+    <div class="title-logo">🌸</div>
+    <div class="title-name">하랑이메이커</div>
+    <div class="title-sub">10살 하랑이의 1년 성장 이야기 💕</div>
+    <div class="title-sub2">과연 어떤 멋진 어른이 될까요? 🦋</div>
+    <div class="title-btns">
+      <button class="btn btn-pink" onclick="startNewGame()">🎮 새 게임 시작하기!</button>
+      <button class="btn btn-purple" id="btn-continue" style="display:none" onclick="loadGame()">💾 이어서 하기</button>
+      <button class="btn btn-gray" onclick="showAlbum()">📖 엔딩 앨범 구경하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 앨범 ══ -->
+<div id="screen-album" class="screen">
+  <div class="album-header">
+    <h2>📖 하랑이의 엔딩 앨범</h2>
+    <div class="album-count-badge">✨ 달성: <span id="album-count">0</span> / <span id="album-total">0</span></div>
+  </div>
+  <div class="album-grid" id="album-grid"></div>
+  <button class="btn btn-pink" onclick="showScreen('screen-title')">🏠 타이틀로 돌아가기</button>
+</div>
+
+<!-- ══ 게임 ══ -->
+<div id="screen-game" class="screen">
+  <div class="game-wrap">
+
+    <div class="top-bar">
+      <div id="ui-date">🗓 1월 1주차 (월)</div>
+      <div id="ui-money">💰 5,000원</div>
+    </div>
+
+    <div class="ailment-banner" id="ailment-banner"></div>
+
+    <div class="char-card">
+      <div class="char-avatar-wrap">
+        <div class="char-avatar" id="char-avatar">🐱</div>
+        <div class="avatar-badge" id="avatar-badge">⚠️</div>
+      </div>
+      <div class="char-info">
+        <div class="char-name">하랑이 🌸</div>
+        <div class="char-age">🎂 10살 · 꿈많은 소녀</div>
+        <div class="char-monologue" id="monologue">오늘도 신나게 해볼까~? ✨🎵</div>
+      </div>
+    </div>
+
+    <div class="week-card">
+      <div class="week-label">📅 이번 주 일정 — 주말(토·일)엔 꼭 쉬어요! 🛋️</div>
+      <div class="week-days" id="week-days"></div>
+    </div>
+
+    <div class="weekend-notice" id="weekend-notice">
+      🌈 오늘은 주말이에요! 공부나 알바보다 푹 쉬는 게 좋아요~ 💕 휴식 탭을 이용해요!
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card-title">📊 하랑이 스테이터스</div>
+      <div class="stat-grid" id="stat-grid"></div>
+      <div class="stress-row">
+        <div class="stress-label">😰 스트레스</div>
+        <div class="stress-bar-wrap"><div class="stress-bar" id="stress-bar" style="width:0%"></div></div>
+        <div class="stress-val" id="stress-val">0</div>
+      </div>
+    </div>
+
+    <div class="action-card">
+      <div class="action-tabs">
+        <button class="tab-btn active" id="tab-btn-work" onclick="switchTab('work')">💼 알바</button>
+        <button class="tab-btn" id="tab-btn-edu" onclick="switchTab('edu')">📚 교육</button>
+        <button class="tab-btn" id="tab-btn-rest" onclick="switchTab('rest')">😴 휴식</button>
+      </div>
+      <div id="tab-work" class="tab-content active"><div class="action-list" id="work-list"></div></div>
+      <div id="tab-edu"  class="tab-content"><div class="action-list" id="edu-list"></div></div>
+      <div id="tab-rest" class="tab-content"><div class="action-list" id="rest-list"></div></div>
+    </div>
+
+    <div class="log-card" id="log-card">
+      <div class="log-item event">🌸 하랑이메이커 시작! 1년 뒤 어떤 어른이 될까요? 💕</div>
+    </div>
+
+    <div class="save-row">
+      <button class="btn btn-gray btn-small" onclick="saveGame()">💾 저장하기</button>
+      <button class="btn btn-gray btn-small" onclick="confirmTitle()">🏠 타이틀</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ 엔딩 ══ -->
+<div id="screen-ending" class="screen">
+  <div class="ending-box">
+    <div class="ending-fireworks" id="ending-fireworks">🎉🎊🎉🎊🎉</div>
+    <div class="ending-icon-big" id="ending-icon">🌟</div>
+    <div class="ending-title" id="ending-title"></div>
+    <div class="ending-sub" id="ending-sub"></div>
+    <div class="ending-desc" id="ending-desc"></div>
+    <div class="ending-stats" id="ending-stats"></div>
+    <div class="ending-btns">
+      <button class="btn btn-pink" onclick="showScreen('screen-title');checkContinueBtn()">🏠 타이틀</button>
+      <button class="btn btn-purple" onclick="showAlbum()">📖 앨범 보기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 모달 ══ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon">🌟</div>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-desc" id="modal-desc"></div>
+    <div class="modal-result" id="modal-result"></div>
+    <div class="modal-btns" id="modal-btns"></div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+//  데이터 정의
+// ════════════════════════════════════════
+
+const STAT_DEFS = [
+  {key:'hp',        name:'체력',   color:'#5cc87a'},
+  {key:'charm',     name:'매력',   color:'#ff8fa3'},
+  {key:'diligence', name:'성실',   color:'#ffc857'},
+  {key:'morality',  name:'성품',   color:'#a0c4ff'},
+  {key:'humor',     name:'개그력', color:'#ffd166'},
+  {key:'social',    name:'사교성', color:'#c9b1ff'},
+  {key:'intel',     name:'지능',   color:'#74c0fc'},
+  {key:'art',       name:'예술성', color:'#f783ac'},
+  {key:'stamina',   name:'지구력', color:'#63e6be'},
+  {key:'faith',     name:'신앙심', color:'#b8c0ff'},
+];
+
+const MONTH_NAMES=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+const DAY_NAMES=['월','화','수','목','금','토','일'];
+
+// ─────────────────────────────────
+//  아르바이트 목록
+// ─────────────────────────────────
+function getWorkList(month){
+  const season = month<=2||month===12?'winter':month<=5?'spring':month<=8?'summer':'autumn';
+  const always = [
+    {id:'housework',  name:'집안일 돕기',     icon:'🏠', reward:3000, stress:10,
+     req:{}, effects:{hp:-2,diligence:5,morality:3},
+     mono:['청소는 마음도 깨끗하게 해준다구~🧹','먼지야 사라져라! ✨','집이 반짝반짝! 💎','요리도 만들어볼까~ 🍳']},
+    {id:'church',     name:'성당일 돕기',     icon:'⛪', reward:2500, stress:7,
+     req:{}, effects:{morality:6,social:3,faith:4},
+     mono:['신이시여 오늘도 잘 부탁드려요~🙏','봉사는 마음이 따뜻해져! 💝','헌화 꽂기 완료! 🌹']},
+    {id:'catcafe',    name:'고양이카페 알바', icon:'🐱', reward:8000, stress:9,
+     req:{}, effects:{charm:4,social:5,hp:2,morality:2},
+     mono:['냥냥이들아 안녕~! 🐾','고양이 털 알러지 없어서 다행이야','이 아이 너무 귀여워❤️','골골골~😸']},
+    {id:'foodsample', name:'마트 시식 도우미',icon:'🥄', reward:6000, stress:14,
+     req:{}, effects:{charm:3,humor:4,social:4,hp:-2},
+     mono:['어서오세요~ 한번 드셔봐요! 😊','웃으면서 권해야 해~','오늘 몇 개나 팔았을까? 🤔']},
+    {id:'youtuber',   name:'귀여운 유튜버',   icon:'📹', reward:11000, stress:17,
+     req:{charm:12}, effects:{charm:5,humor:6,social:3,diligence:-1},
+     mono:['구독 좋아요 알림설정! 🔔','오늘 영상 편집 어떻게 하지...','조회수 대박나라~! 🚀','섬네일이 생명이야 🎨']},
+    {id:'progamer',   name:'미니게임 대회',   icon:'🎮', reward:13000, stress:20,
+     req:{intel:18}, effects:{intel:5,stamina:-3,hp:-2,humor:3},
+     mono:['오늘도 클러치 플레이! 🎯','손가락이 아파도 참아야해...','1등 먹었다!! 🏆','엄마는 게임 그만하래...']},
+  ];
+  const seasonal = {
+    spring:[{id:'harvest_spring',name:'봄 꽃축제 알바',icon:'🌷',reward:9000,stress:14,
+      req:{},effects:{hp:3,stamina:5,diligence:4,charm:2},
+      mono:['벚꽃이 너무 예뻐! 🌸','봄 냄새가 너무 좋아~','꽃 팔기 완료! 💐']}],
+    summer:[{id:'beach_cafe',name:'해변 카페 서빙',icon:'☀️',reward:11000,stress:13,
+      req:{charm:10},effects:{charm:6,social:5,hp:2},
+      mono:['파도 소리 들으면서 일하니까 좋다~ 🌊','선크림 발랐지? 😎','여름 최고야! ☀️']}],
+    autumn:[{id:'apple_picking',name:'사과·포도 따기',icon:'🍎',reward:9500,stress:13,
+      req:{},effects:{hp:4,stamina:5,diligence:3,art:2},
+      mono:['사과가 빨갛게 익었다~ 🍎','포도 한 알 먹어도 되겠지? 🍇','가을 냄새 너무 좋아! 🍂']}],
+    winter:[{id:'xmas_deco',name:'크리스마스 장식',icon:'🎄',reward:10000,stress:12,
+      req:{art:10},effects:{art:5,charm:4,social:3,hp:-1},
+      mono:['트리 꾸미기 너무 재밌어! 🎄','이 별은 여기에~⭐','산타가 되는 기분이야! 🎅']}],
+  };
+  return [...always,...(seasonal[season]||[])];
+}
+
+// ─────────────────────────────────
+//  교육 목록
+// ─────────────────────────────────
+const EDU_LIST = [
+  {id:'edu_hp',    name:'체육 학원',      icon:'🏃', cost:5000, stress:8,  effects:{hp:9,stamina:5},
+   mono:['몸이 건강해야 뭐든 할 수 있어! 💪','오늘도 달린다~🏃','운동은 배신하지 않아! 🥇']},
+  {id:'edu_charm', name:'뷰티 클래스',    icon:'💄', cost:6000, stress:7,  effects:{charm:9,art:3},
+   mono:['예뻐지는 건 노력이야! 💅','오늘의 메이크업 완성~','자신감이 생겨! ✨']},
+  {id:'edu_intel', name:'수학·과학 학원', icon:'🔬', cost:7000, stress:10, effects:{intel:9,diligence:3},
+   mono:['공부가 제일 쉬웠어요...는 거짓말 😅','수식이 너무 많아...','그래도 배우는 건 좋아! 📝']},
+  {id:'edu_art',   name:'미술 학원',      icon:'🎨', cost:6500, stress:7,  effects:{art:9,charm:3},
+   mono:['색깔 조합이 너무 재밌어! 🎨','내 작품이 최고야~ 🖼','예술은 자유다! 🌈']},
+  {id:'edu_social',name:'스피치 학원',    icon:'🎤', cost:5500, stress:8,  effects:{social:9,charm:3,humor:2},
+   mono:['말을 잘하면 인생이 편해진다구! 😄','발음 교정 중~','당당하게 말해야지! 🗣']},
+  {id:'edu_moral', name:'철학·도덕 수업', icon:'📖', cost:4500, stress:6,  effects:{morality:9,intel:3,faith:3},
+   mono:['선생님 말씀이 마음에 와닿아 💭','착하게 살자! 😇','인간이란 무엇인가...🤔']},
+  {id:'edu_faith', name:'성가대 활동',    icon:'🎵', cost:3000, stress:5,  effects:{faith:9,social:4,art:2},
+   mono:['노래하면 마음이 평화로워져 🕊','화음 맞추기 어렵지만 재밌어! 🎶','신앙심이 깊어지는 것 같아']},
+  {id:'edu_humor', name:'개그 학원',      icon:'😂', cost:5000, stress:9,  effects:{humor:10,social:3,charm:2},
+   mono:['웃기는 것도 기술이야! 🎭','타이밍이 생명이라구~','오늘 개그 대박이었어! 😂']},
+  {id:'edu_stam',  name:'마라톤 훈련',    icon:'🏅', cost:5000, stress:12, effects:{stamina:10,hp:5,diligence:3},
+   mono:['포기란 없다! 💨','언젠간 완주할거야 🏅','발이 아파도 달린다! 🦵']},
+];
+
+// ─────────────────────────────────
+//  휴식 목록
+// ─────────────────────────────────
+const VAC_DEST = {
+  winter:['⛷ 스키장','🏔 설경 명소','🎄 크리스마스 마켓'],
+  spring:['🌸 벚꽃 명소','🌿 봄 들판','🌷 튤립 정원'],
+  summer:['🏖 해수욕장','🏔 계곡','🌊 워터파크'],
+  autumn:['🍁 단풍 산','🍇 과수원 마을','🌾 억새 평원'],
+};
+function getSeason(m){return m<=2||m===12?'winter':m<=5?'spring':m<=8?'summer':'autumn';}
+
+function getRestList(month){
+  const vacName = VAC_DEST[getSeason(month)][Math.floor(Math.random()*3)];
+  return [
+    {id:'rest_home',    name:'집에서 푹 쉬기',   icon:'🛋️', cost:0,
+     stress:-22, effects:{hp:6},
+     mono:['누워있는게 최고야~😌','오늘은 아무것도 안 할 테야!','유튜브 보다 잠들겠지~ 💤'],
+     desc:'스트레스 -22, 체력+6'},
+    {id:'rest_out',     name:'밖으로 놀러가기',  icon:'🎡', cost:2000,
+     stress:-15, effects:{hp:3,charm:2,humor:2},
+     mono:['바람 쐬러 나가야지! 🌬','카페라도 갈까? ☕','기분 전환이 필요해~ 🌈'],
+     desc:'스트레스 -15, 매력+2, 개그력+2'},
+    {id:'rest_friend',  name:'친구 집에 놀러가기',icon:'👭', cost:1000,
+     stress:-18, effects:{social:6,humor:3,charm:2},
+     mono:['친구랑 놀면 시간이 너무 빨리 가! ⏰','수다 떨고 싶어~','오늘은 친구네 가자! 🏃'],
+     desc:'스트레스 -18, 사교성+6, 랜덤 이벤트!'},
+    {id:'rest_vacation',name:`✈️ 바캉스 (${vacName})`, icon:'✈️', cost:20000,
+     stress:-40, effects:{hp:10,charm:5,social:3},
+     mono:['여행은 언제나 설레~! 🌟','짐 싸는 것도 재밌어!','어디서 뭘 먹을까? 😋'],
+     desc:'스트레스 -40, 체력+10. 이벤트 발생! (비용 2만원)'},
+  ];
+}
+
+// ─────────────────────────────────
+//  바캉스 이벤트
+// ─────────────────────────────────
+const VACATION_EVENTS = [
+  {icon:'🗑️',title:'길가에 쓰레기가!',desc:'바캉스 중 날카로운 쓰레기가 떨어져 있어요. 어떻게 할까요? 🤔',
+   choices:[
+    {text:'🙋 줍는다',result:'성품이 올랐어요! 그런데 살짝 베여 체력이 떨어졌어요...😅',effects:{morality:20,hp:-15}},
+    {text:'🚶 그냥 지나친다',result:'성품이 떨어졌어요. 양심이 찔려요...😣',effects:{morality:-18}},
+  ]},
+  {icon:'🐔',title:'닭이 먼저? 알이 먼저?',desc:'여행 중 만난 할아버지가 갑자기 물어봐요! "닭이 먼저냐, 알이 먼저냐?" 🤔',
+   choices:[
+    {text:'🐔 닭이 먼저!',result:'"그렇지, 창조론적 관점이야!" 지능이 올랐어요. 🧠',effects:{intel:18,morality:8}},
+    {text:'🥚 알이 먼저!',result:'"진화론적 사고야!" 지능과 개그력이 올랐어요. 😄',effects:{intel:18,humor:8}},
+    {text:'🤷 모르겠어요',result:'"그게 정답이야! 겸손함이 지혜야!" 성품이 크게 올랐어요! 💕',effects:{morality:22,intel:12}},
+  ]},
+  {icon:'🌿',title:'깻잎 논쟁!',desc:'식당에서 친구와 밥을 먹는데 깻잎 논쟁이 벌어졌어요! 어떻게 생각해요? 🍃',
+   choices:[
+    {text:'😡 당연히 이상하지!',result:'격렬한 토론이 벌어졌어요. 사교성이 올랐지만 스트레스가 쌓였어요.',effects:{social:12,humor:8},stress:8},
+    {text:'😊 그럴 수도 있지~',result:'"역시 하랑이는 이해심이 넓어!" 매력과 사교성이 올랐어요. 💕',effects:{charm:18,social:12}},
+    {text:'🍽 깻잎이 뭔데요?',result:'모두가 폭소! 개그력이 크게 올랐어요. 😂',effects:{humor:25,charm:8}},
+  ]},
+  {icon:'🌊',title:'파도가 너무 높아!',desc:'바다에서 파도가 갑자기 높아졌어요! 저 멀리 어린아이가 위험해 보여요! 😨',
+   choices:[
+    {text:'🏊 뛰어들어 구한다',result:'아이를 구했어요! 체력이 소모됐지만 성품과 지구력이 올랐어요! 💪',effects:{morality:28,stamina:18,hp:-22}},
+    {text:'📢 어른에게 알린다',result:'현명한 판단! 구조대가 왔어요. 지능과 성품이 올랐어요. 🧠',effects:{intel:18,morality:18}},
+    {text:'📸 일단 사진 찍는다',result:'...SNS에 올렸다가 혼났어요. 😅 매력이 떨어졌어요.',effects:{charm:-22,humor:-8}},
+  ]},
+  {icon:'👻',title:'숙소에 귀신이?!',desc:'숙소에서 한밤중에 이상한 소리가! 옆방 문 틈으로 빛이 새어나와요... 😱',
+   choices:[
+    {text:'🔍 확인하러 간다',result:'알고 보니 옆방 아저씨가 야식을 드시고 있었어요! 개그력이 올랐어요. 😂',effects:{humor:22,hp:5}},
+    {text:'🙈 이불 뒤집어쓴다',result:'무서워서 밤새 못 잤어요. 체력이 떨어졌어요. 😴',effects:{hp:-18,stamina:-8}},
+    {text:'📱 귀신 퇴치 영상 튼다',result:'유튜브 보다가 아침까지 깨있었어요. 지능과 개그력이 올랐어요. 😅',effects:{intel:8,humor:18}},
+  ]},
+  {icon:'🍦',title:'아이스크림을 흘렸다!',desc:'힘들게 산 아이스크림을 땅에 떨어뜨렸어요! 😭 5초 룰을 적용할까요?',
+   choices:[
+    {text:'🙌 5초 룰! 줍는다',result:'...배탈이 났어요. 체력이 떨어졌지만 개그력이 올랐어요. 😂',effects:{hp:-18,humor:18}},
+    {text:'😭 포기하고 새로 산다',result:'새 아이스크림은 더 맛있었어요! 기분이 좋아졌어요. 🍦',effects:{charm:12,hp:5}},
+    {text:'🐶 지나가는 강아지에게 준다',result:'강아지가 행복해했어요! 성품이 올랐어요. 🐕',effects:{morality:22,charm:8}},
+  ]},
+  {icon:'🌋',title:'화산이 폭발한다면?',desc:'가이드가 묻어요. "만약 지금 화산이 폭발한다면 가장 먼저 뭘 하시겠어요?" 🤔',
+   choices:[
+    {text:'📸 인스타 올린다',result:'"요즘 세대답네요!" 개그력과 매력이 올랐어요. 😂',effects:{humor:18,charm:12}},
+    {text:'🏃 무조건 뛴다',result:'현실적인 판단! 지구력이 크게 올랐어요. 🏃',effects:{stamina:22,hp:5}},
+    {text:'🙏 기도한다',result:'신앙심이 크게 올랐어요! 🙏',effects:{faith:28,morality:12}},
+  ]},
+  {icon:'🐠',title:'신기한 물고기 발견!',desc:'스노클링 중 처음 보는 신기한 물고기를 발견했어요! 어떻게 할까요? 🤿',
+   choices:[
+    {text:'🤳 사진을 찍는다',result:'나중에 찾아보니 희귀종이었어요! 지능이 올랐어요. 🧠',effects:{intel:18,art:8}},
+    {text:'🤲 잡아본다',result:'물고기가 독이 있었어요! 체력이 크게 떨어졌어요. 😱',effects:{hp:-28,humor:8}},
+    {text:'🌊 그냥 지켜본다',result:'자연과 하나가 된 느낌~ 성품과 예술성이 올랐어요. 🌿',effects:{morality:18,art:18}},
+  ]},
+  {icon:'🎭',title:'길거리 버스킹!',desc:'버스킹 뮤지션이 갑자기 "같이 노래해요!" 라고 해요! 어떻게 할까요? 🎵',
+   choices:[
+    {text:'🎤 신나게 한다',result:'박수갈채! 매력과 예술성이 크게 올랐어요! 🎤',effects:{charm:22,art:18,social:8}},
+    {text:'😳 부끄러워서 도망친다',result:'나중에 후회했어요... 매력이 조금 떨어졌어요. 😅',effects:{charm:-8,humor:5}},
+    {text:'💰 팁을 드린다',result:'뮤지션이 감동받아 특별 공연을 해줬어요! 예술성이 올랐어요. 🎵',effects:{art:18,morality:12}},
+  ]},
+  {icon:'🌙',title:'밤하늘의 별',desc:'별이 가득한 밤하늘! 별똥별이 지나가요! 소원을 빌까요? ⭐',
+   choices:[
+    {text:'🌟 소원을 빈다',result:'소원이 이루어지는 기분! 모든 스탯이 조금씩 올랐어요. 💕',effects:{hp:5,charm:5,intel:5,morality:5,faith:5}},
+    {text:'🔭 별자리를 찾는다',result:'오리온자리를 찾았어요! 지능과 예술성이 올랐어요. 🔭',effects:{intel:18,art:12}},
+    {text:'😴 졸려서 잠든다',result:'별 보다 잠들었어요. 체력이 회복됐어요. 💤',effects:{hp:18,stamina:8}},
+  ]},
+  {icon:'🍜',title:'현지 음식 도전!',desc:'이상한 냄새가 나는 현지 음식... 먹어볼까요? 🤔',
+   choices:[
+    {text:'😋 도전한다!',result:'의외로 맛있었어요! 체력과 개그력이 올랐어요. 🍜',effects:{hp:12,humor:18,charm:8}},
+    {text:'🙅 패스!',result:'나중에 먹어본 사람이 맛있다고 했대요. 아쉬웠어요. 😅',effects:{intel:5}},
+    {text:'🤢 냄새만 맡고 도망',result:'모두가 웃었어요! 개그력이 크게 올랐어요. 😂',effects:{humor:22,social:8}},
+  ]},
+  {icon:'⛺',title:'텐트가 날아간다!',desc:'캠핑 중 강풍이 불어 텐트가 날아가려 해요! 😱',
+   choices:[
+    {text:'💪 텐트를 잡는다',result:'텐트는 지켰지만 지구력이 소모됐어요. 성실함이 올랐어요! 💪',effects:{stamina:-12,diligence:22}},
+    {text:'📹 영상 찍는다',result:'유튜브에 올렸더니 대박났어요! 매력과 개그력이 올랐어요. 📹',effects:{charm:18,humor:22}},
+    {text:'🏃 텐트와 함께 날아간다',result:'...체력이 크게 떨어졌지만 전설이 됐어요. 😂',effects:{hp:-28,humor:28}},
+  ]},
+];
+
+// ─────────────────────────────────
+//  상태이상 정의
+// ─────────────────────────────────
+const AILMENTS = {
+  sick:        {name:'😷 감기 몸살',   desc:'체력이 매일 감소해요. 집에서 쉬어야 해요!'},
+  burnout:     {name:'🤯 번아웃',      desc:'모든 스탯 획득이 절반으로 줄어들어요.'},
+  princess:    {name:'👑 공주병',      desc:'매력은 오르지만 성품이 매일 감소해요.'},
+  confident:   {name:'💪 자신만만',    desc:'성실과 지구력이 오르지만 성품이 떨어져요.'},
+  shy:         {name:'😶 소극적',      desc:'모든 활동의 효과가 줄어들어요.'},
+  fight:       {name:'😤 친구와 싸움', desc:'사교성이 크게 감소한 상태예요.'},
+  hospitalized:{name:'🏥 입원 중',     desc:'이번 주는 아무것도 할 수 없어요.'},
+};
+
+// ─────────────────────────────────
+//  엔딩 정의 (총 21개)
+// ─────────────────────────────────
+const ENDINGS = [
+  // ── 일반 엔딩 (⭐) ──
+  {id:'e_normal',   name:'평범하지만 행복한 하루', icon:'🏡', rare:'⭐',
+   cond:g=>true,
+   desc:'화려하진 않지만, 하랑이는 자신만의 속도로 소중한 일상을 살아가고 있어요. 평범함 속에서 행복을 찾은 하랑이였어요. ☀️💕'},
+  {id:'e_teacher',  name:'인기 선생님',            icon:'👩‍🏫', rare:'⭐',
+   cond:g=>g.stats.morality>=55&&g.stats.social>=50&&g.stats.diligence>=45,
+   desc:'하랑이는 학생들에게 사랑받는 선생님이 되었어요. 따뜻한 마음으로 아이들의 꿈을 키워주고 있답니다. 🍎💕'},
+  {id:'e_farmer',   name:'행복한 농부',             icon:'🌾', rare:'⭐',
+   cond:g=>(g.workCount['harvest_spring']||0)+(g.workCount['apple_picking']||0)>=5&&g.stats.hp>=40,
+   desc:'하랑이는 자연 속에서 농사를 짓는 삶을 선택했어요. 소박하지만 건강하고 행복한 나날을 보내고 있어요. 🌻💚'},
+  {id:'e_social',   name:'사회복지사',              icon:'🤝', rare:'⭐',
+   cond:g=>g.stats.morality>=60&&g.stats.social>=55&&g.stats.faith>=35,
+   desc:'하랑이는 어려운 이웃을 돕는 사회복지사가 되었어요. 따뜻한 세상을 만들어가는 소중한 존재예요. 💝'},
+  {id:'e_runaway',  name:'자유로운 여행가',         icon:'🎒', rare:'⭐',
+   cond:g=>g.runawayCount>=2,
+   desc:'방랑 속에서 진짜 자신을 찾은 하랑이! 자유로운 여행가로 세계를 누비고 있어요. 🗺✈️'},
+  // ── 두 별 엔딩 (⭐⭐) ──
+  {id:'e_artist',   name:'유명 예술가',             icon:'🎨', rare:'⭐⭐',
+   cond:g=>g.stats.art>=70&&g.stats.charm>=45,
+   desc:'하랑이의 작품이 갤러리에 전시되었어요! 독창적인 감성으로 많은 이들에게 감동을 주는 예술가가 되었답니다. 🖼✨'},
+  {id:'e_comedian', name:'개그우먼',                icon:'😂', rare:'⭐⭐',
+   cond:g=>g.stats.humor>=70&&g.stats.social>=50,
+   desc:'하랑이의 천재적인 유머 감각이 빛을 발했어요! TV 개그 프로그램의 간판 스타가 되었어요! 🎭😂'},
+  {id:'e_youtuber', name:'인기 유튜버',             icon:'📹', rare:'⭐⭐',
+   cond:g=>(g.workCount['youtuber']||0)>=6&&g.stats.charm>=40&&g.stats.humor>=35,
+   desc:'하랑이의 유튜브 채널 구독자가 100만을 돌파했어요! 콘텐츠 크리에이터로 성공적인 삶을 살게 되었어요. 🎬🌟'},
+  {id:'e_progamer', name:'프로게이머',              icon:'🎮', rare:'⭐⭐',
+   cond:g=>(g.workCount['progamer']||0)>=6&&g.stats.intel>=50,
+   desc:'하랑이는 게임 대회에서 우승을 거머쥐었어요! 세계적인 프로게이머로 이름을 알리게 되었어요. 🏆🎮'},
+  {id:'e_chef',     name:'스타 셰프',               icon:'👨‍🍳', rare:'⭐⭐',
+   cond:g=>(g.workCount['housework']||0)>=8&&g.stats.diligence>=50&&g.stats.art>=35,
+   desc:'집안일을 하며 갈고닦은 요리 실력이 빛을 발했어요! 유명 레스토랑의 스타 셰프가 되었어요! 🍽✨'},
+  {id:'e_musician', name:'뮤지션',                  icon:'🎵', rare:'⭐⭐',
+   cond:g=>g.stats.art>=65&&g.stats.charm>=50&&g.stats.social>=40,
+   desc:'하랑이의 음악이 사람들의 마음을 울렸어요! 감성적인 뮤지션으로 많은 사랑을 받고 있어요. 🎸💕'},
+  {id:'e_nun',      name:'수녀님',                  icon:'✝️', rare:'⭐⭐',
+   cond:g=>g.stats.faith>=70&&g.stats.morality>=65&&g.stats.social>=35,
+   desc:'하랑이는 깊은 신앙심과 봉사 정신으로 수녀의 길을 택했어요. 많은 이들에게 빛과 소금이 되었답니다. 🕊💕'},
+  {id:'e_writer',   name:'베스트셀러 작가',         icon:'📚', rare:'⭐⭐',
+   cond:g=>g.stats.intel>=65&&g.stats.art>=55&&g.stats.diligence>=45,
+   desc:'하랑이가 쓴 소설이 베스트셀러가 되었어요! 독자들의 마음을 움직이는 작가로 자리매김했답니다. 📖✨'},
+  {id:'e_designer', name:'패션 디자이너',           icon:'👗', rare:'⭐⭐',
+   cond:g=>g.stats.art>=68&&g.stats.charm>=58,
+   desc:'하랑이의 독창적인 디자인이 패션쇼에서 주목받았어요! 세계적인 패션 디자이너로 성장했답니다! 💃✨'},
+  // ── 세 별 엔딩 (⭐⭐⭐) ──
+  {id:'e_idol',     name:'아이돌 스타',             icon:'🌟', rare:'⭐⭐⭐',
+   cond:g=>g.stats.charm>=75&&g.stats.art>=55&&g.stats.social>=45,
+   desc:'하랑이는 눈부신 매력과 예술성으로 아이돌 그룹에 데뷔했어요! 수많은 팬들의 사랑을 받으며 빛나는 무대 위에서 꿈을 이루었답니다. 🌟💕'},
+  {id:'e_doctor',   name:'의사 선생님',             icon:'👩‍⚕️', rare:'⭐⭐⭐',
+   cond:g=>g.stats.intel>=80&&g.stats.diligence>=65&&g.stats.morality>=45,
+   desc:'하랑이는 뛰어난 지능과 성실함으로 의대에 합격했어요! 사람들을 돕는 훌륭한 의사가 되었답니다. 💊✨'},
+  {id:'e_athlete',  name:'국가대표 선수',           icon:'🏅', rare:'⭐⭐⭐',
+   cond:g=>g.stats.stamina>=80&&g.stats.hp>=65&&g.stats.diligence>=55,
+   desc:'하랑이는 끊임없는 훈련 끝에 국가대표로 선발되었어요! 올림픽 무대에서 태극마크를 달고 뛰었답니다! 🇰🇷🏅'},
+  {id:'e_diplomat', name:'외교관',                  icon:'🌍', rare:'⭐⭐⭐',
+   cond:g=>g.stats.intel>=70&&g.stats.social>=70&&g.stats.morality>=55,
+   desc:'하랑이의 뛰어난 사교성과 도덕성이 인정받았어요! 세계를 무대로 활약하는 외교관이 되었답니다. ✈️🌍'},
+  {id:'e_scientist',name:'과학자',                  icon:'🔬', rare:'⭐⭐⭐',
+   cond:g=>g.stats.intel>=85&&g.stats.diligence>=70,
+   desc:'하랑이의 연구가 세계적인 학술지에 실렸어요! 인류의 발전에 기여하는 훌륭한 과학자가 되었답니다. 🧬✨'},
+  // ── 히든 엔딩 (🌟) ──
+  {id:'e_goddess',  name:'✨ 신이 되었다!',         icon:'🌈', rare:'🌟 히든',
+   cond:g=>{
+     const total=Object.values(g.stats).reduce((a,b)=>a+b,0);
+     return total>=650&&g.stats.morality>=75&&g.stats.faith>=65;
+   },
+   desc:'모든 스탯이 극한까지 오른 하랑이는 인간의 경계를 초월했어요... 신화 속 존재가 되어 세상을 수호하는 전설이 되었답니다! 🌌💫'},
+  {id:'e_witch',    name:'✨ 마법소녀!',             icon:'🔮', rare:'🌟 히든',
+   cond:g=>g.stats.intel>=80&&g.stats.art>=75&&g.stats.faith>=55,
+   desc:'하랑이는 고대 마법서를 발견하고 진짜 마법을 익혔어요! 반짝이는 마법으로 세상을 밝히는 마법소녀가 되었답니다! 🌙✨'},
+  {id:'e_hero',     name:'✨ 세상을 구한 영웅!',    icon:'⚡', rare:'🌟 히든',
+   cond:g=>g.stats.hp>=75&&g.stats.stamina>=75&&g.stats.morality>=70&&g.stats.intel>=65,
+   desc:'완벽한 신체와 정신을 갖춘 하랑이는 위기의 순간 세상을 구했어요! 전설 속 영웅이 실존했던 거예요! ⚡🦸‍♀️'},
+  // ── 배드 엔딩 ──
+  {id:'e_bad_stress',name:'번아웃... 그래도 괜찮아',icon:'💤', rare:'💔 배드',
+   cond:g=>false, // 코드로 직접 트리거
+   desc:'1년 내내 무리했던 하랑이는 결국 완전히 지쳐버렸어요. 하지만 이 경험이 소중한 교훈이 되었답니다. 천천히, 자신의 속도로 다시 시작하는 하랑이를 응원해요. 💪💕'},
+];
+
+// ════════════════════════════════════════
+//  게임 상태
+// ════════════════════════════════════════
+let G = null;
+
+function newGameState(){
+  return {
+    month:1, week:1, dayOfWeek:0, totalDays:0,
+    money:5000,
+    stats:{hp:30,charm:20,diligence:20,morality:20,humor:15,social:15,intel:20,art:15,stamina:20,faith:10},
+    stress:0,
+    ailment:null, ailmentWeeksLeft:0,
+    workCount:{}, eduCount:{},
+    runawayCount:0,
+    actionDoneToday:false,
+    weekDone:[],
+    log:[],
+    unlockedEndings:[],
+  };
+}
+
+// ════════════════════════════════════════
+//  화면 전환
+// ════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function checkContinueBtn(){
+  document.getElementById('btn-continue').style.display =
+    localStorage.getItem('harang_save') ? 'inline-block' : 'none';
+}
+function confirmTitle(){
+  if(confirm('타이틀로 돌아갈까요?\n(저장하지 않으면 진행이 사라져요!)')){
+    showScreen('screen-title'); checkContinueBtn();
+  }
+}
+
+// ════════════════════════════════════════
+//  저장 / 불러오기
+// ════════════════════════════════════════
+function saveGame(){
+  localStorage.setItem('harang_save', JSON.stringify(G));
+  showModal('💾','저장 완료!','하랑이의 여정을 저장했어요 🌸💕',[{text:'확인 ✅',action:closeModal}]);
+}
+function loadGame(){
+  const raw=localStorage.getItem('harang_save');
+  if(!raw){alert('저장 데이터가 없어요!');return;}
+  G=JSON.parse(raw);
+  showScreen('screen-game');
+  renderAll();
+}
+function startNewGame(){
+  if(localStorage.getItem('harang_save')){
+    if(!confirm('새 게임을 시작하면 기존 저장이 사라져요. 계속할까요?')) return;
+  }
+  G=newGameState();
+  showScreen('screen-game');
+  renderAll();
+  addLog('🌸 하랑이의 1년이 시작됩니다! 1월 1주차 (월요일) 화이팅! 💕','event');
+}
+
+// ════════════════════════════════════════
+//  렌더링
+// ════════════════════════════════════════
+function renderAll(){
+  renderTopBar();
+  renderCharAvatar();
+  renderStats();
+  renderWeekDays();
+  renderActionPanel();
+  renderAilmentBanner();
+  renderLog();
+}
+
+function renderTopBar(){
+  document.getElementById('ui-date').textContent =
+    `🗓 ${MONTH_NAMES[G.month-1]} ${G.week}주차 (${DAY_NAMES[G.dayOfWeek]})`;
+  document.getElementById('ui-money').textContent =
+    `💰 ${G.money.toLocaleString()}원`;
+}
+
+const AVATARS = ['🐱','🐰','🦊','🐻','🐼','🦋','🌸','⭐','🎀','🍭'];
+function renderCharAvatar(){
+  const idx = Math.floor((G.stats.charm+G.stats.art)/25) % AVATARS.length;
+  const el = document.getElementById('char-avatar');
+  el.textContent = AVATARS[idx]; // textContent 직접 교체 (안전)
+  const badge = document.getElementById('avatar-badge');
+  badge.className = 'avatar-badge' + (G.ailment ? ' show' : '');
+}
+
+function renderStats(){
+  const grid = document.getElementById('stat-grid');
+  grid.innerHTML = '';
+  STAT_DEFS.forEach(def=>{
+    const val = Math.min(100, Math.max(0, G.stats[def.key]||0));
+    const row = document.createElement('div');
+    row.className = 'stat-row';
+    row.innerHTML = `
+      <div class="stat-label">${def.name}</div>
+      <div class="stat-bar-wrap">
+        <div class="stat-bar" style="width:${val}%;background:${def.color}"></div>
+      </div>
+      <div class="stat-val">${val}</div>`;
+    grid.appendChild(row);
+  });
+  const sv = Math.min(100, G.stress);
+  document.getElementById('stress-bar').style.width = sv+'%';
+  document.getElementById('stress-val').textContent = sv;
+}
+
+function renderWeekDays(){
+  const wrap = document.getElementById('week-days');
+  wrap.innerHTML = '';
+  const isWeekend = G.dayOfWeek===5||G.dayOfWeek===6;
+  DAY_NAMES.forEach((d,i)=>{
+    const dot = document.createElement('div');
+    let cls = 'day-dot';
+    const isWE = i===5||i===6;
+    if(i < G.dayOfWeek) cls += ' done';
+    else if(i === G.dayOfWeek) cls += ' today' + (isWE?' weekend':'');
+    else if(isWE) cls += ' weekend';
+    dot.className = cls;
+    dot.textContent = d;
+    wrap.appendChild(dot);
+  });
+  // 주말 안내
+  const notice = document.getElementById('weekend-notice');
+  notice.className = 'weekend-notice' + (isWeekend?' show':'');
+}
+
+function renderActionPanel(){
+  renderWorkList(); renderEduList(); renderRestList();
+  if(G.dayOfWeek===5||G.dayOfWeek===6) switchTab('rest');
+}
+
+function renderWorkList(){
+  const list = document.getElementById('work-list');
+  list.innerHTML = '';
+  getWorkList(G.month).forEach(w=>{
+    const sr = calcSuccessRate(w);
+    const div = document.createElement('div');
+    div.className = 'action-item';
+    div.innerHTML = `
+      <div class="ai-left">
+        <div class="ai-name">${w.icon} ${w.name}</div>
+        <div class="ai-info">스트레스+${w.stress} | 성공률 ${sr}%</div>
+      </div>
+      <div class="ai-reward">+${w.reward.toLocaleString()}원</div>`;
+    div.onclick = ()=>doWork(w);
+    list.appendChild(div);
+  });
+}
+
+function renderEduList(){
+  const list = document.getElementById('edu-list');
+  list.innerHTML = '';
+  EDU_LIST.forEach(e=>{
+    const ok = G.money >= e.cost;
+    const div = document.createElement('div');
+    div.className = 'action-item' + (ok?'':' locked');
+    const effStr = Object.entries(e.effects).map(([k,v])=>getStatName(k)+(v>0?'+':'')+v).join(', ');
+    div.innerHTML = `
+      <div class="ai-left">
+        <div class="ai-name">${e.icon} ${e.name}</div>
+        <div class="ai-info">스트레스+${e.stress} | ${effStr}</div>
+      </div>
+      <div class="ai-reward cost">-${e.cost.toLocaleString()}원</div>`;
+    if(ok) div.onclick = ()=>doEdu(e);
+    list.appendChild(div);
+  });
+}
+
+function renderRestList(){
+  const list = document.getElementById('rest-list');
+  list.innerHTML = '';
+  getRestList(G.month).forEach(r=>{
+    const ok = G.money >= r.cost;
+    const div = document.createElement('div');
+    div.className = 'action-item' + (!ok?' locked':'');
+    div.innerHTML = `
+      <div class="ai-left">
+        <div class="ai-name">${r.icon} ${r.name}</div>
+        <div class="ai-info">${r.desc}</div>
+      </div>
+      <div class="ai-reward ${r.cost===0?'free':'cost'}">${r.cost===0?'무료 🆓':'-'+r.cost.toLocaleString()+'원'}</div>`;
+    if(ok) div.onclick = ()=>doRest(r);
+    list.appendChild(div);
+  });
+}
+
+function renderAilmentBanner(){
+  const b = document.getElementById('ailment-banner');
+  if(G.ailment && AILMENTS[G.ailment]){
+    b.className = 'ailment-banner show';
+    b.textContent = `${AILMENTS[G.ailment].name} (${G.ailmentWeeksLeft}주 남음) — ${AILMENTS[G.ailment].desc}`;
+  } else {
+    b.className = 'ailment-banner';
+    b.textContent = '';
+  }
+}
+
+function renderLog(){
+  const card = document.getElementById('log-card');
+  card.innerHTML = '';
+  (G.log||[]).forEach(l=>{
+    const div = document.createElement('div');
+    div.className = 'log-item ' + (l.cls||'');
+    div.textContent = l.text;
+    card.appendChild(div);
+  });
+}
+
+function getStatName(key){
+  const d = STAT_DEFS.find(d=>d.key===key);
+  return d ? d.name : key;
+}
+
+// ════════════════════════════════════════
+//  탭 전환
+// ════════════════════════════════════════
+function switchTab(tab){
+  ['work','edu','rest'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+    document.getElementById('tab-btn-'+t).classList.toggle('active', t===tab);
+  });
+}
+
+// ════════════════════════════════════════
+//  성공률
+// ════════════════════════════════════════
+function calcSuccessRate(work){
+  let bonus = 0;
+  const avg = Object.values(G.stats).reduce((a,b)=>a+b,0)/STAT_DEFS.length;
+  bonus += Math.floor(avg/5);
+  Object.entries(work.req||{}).forEach(([k,v])=>{
+    bonus += Math.min(25, Math.floor(((G.stats[k]||0)-v)/2));
+  });
+  return Math.min(95, Math.max(25, 50+bonus));
+}
+
+// ════════════════════════════════════════
+//  효과 적용
+// ════════════════════════════════════════
+function applyEffects(effects, mult=1.0){
+  Object.entries(effects).forEach(([k,v])=>{
+    if(G.stats[k] !== undefined){
+      G.stats[k] = Math.min(100, Math.max(0, G.stats[k]+Math.round(v*mult)));
+    }
+  });
+}
+
+// ════════════════════════════════════════
+//  날짜 진행
+// ════════════════════════════════════════
+function advanceDay(){
+  G.weekDone.push(G.dayOfWeek);
+  G.dayOfWeek++;
+  G.totalDays++;
+  G.actionDoneToday = false;
+
+  // 상태이상 — 매일 효과
+  if(G.ailment==='sick'){
+    G.stats.hp = Math.max(0, G.stats.hp-5);
+    addLog('😷 감기 몸살로 체력-5...','bad');
+  }
+  if(G.ailment==='princess'){
+    G.stats.morality = Math.max(0, G.stats.morality-2);
+    G.stats.charm = Math.min(100, G.stats.charm+1);
+  }
+  if(G.ailment==='confident'){
+    G.stats.diligence = Math.min(100, G.stats.diligence+1);
+    G.stats.morality = Math.max(0, G.stats.morality-1);
+  }
+  if(G.ailment==='fight'){
+    // fight: 사교성 매일 -2
+    G.stats.social = Math.max(0, G.stats.social-2);
+  }
+
+  // 주 넘어가기
+  if(G.dayOfWeek >= 7){
+    G.dayOfWeek = 0;
+    G.weekDone = [];
+    G.week++;
+
+    // 상태이상 주 감소
+    if(G.ailment && G.ailmentWeeksLeft > 0){
+      G.ailmentWeeksLeft--;
+      if(G.ailmentWeeksLeft <= 0){
+        addLog(`✅ 상태이상 [${AILMENTS[G.ailment].name}]이 회복됐어요!`,'good');
+        G.ailment = null;
+      }
+    }
+
+    // 월 넘어가기
+    if(G.week > 4){
+      G.week = 1;
+      G.month++;
+      if(G.month > 12){
+        setTimeout(()=>triggerEnding(), 600);
+        return;
+      }
+      addLog(`🗓 ${MONTH_NAMES[G.month-1]}이 시작됐어요! 화이팅! 💕`,'event');
+    }
+  }
+  renderAll();
+}
+
+// ════════════════════════════════════════
+//  아르바이트
+// ════════════════════════════════════════
+function doWork(work){
+  if(G.actionDoneToday){showToast('오늘은 이미 활동했어요! 내일 또 해요~ 😊');return;}
+  if(G.ailment==='hospitalized'){showToast('입원 중이라 아무것도 할 수 없어요... 💤');return;}
+
+  const mono = work.mono[Math.floor(Math.random()*work.mono.length)];
+  setMonologue(`"${mono}"`);
+
+  const rate = calcSuccessRate(work);
+  const roll = Math.random()*100;
+  let resultText, moneyMult, cls;
+
+  if(roll > rate+15){
+    moneyMult=0.5; cls='bad';
+    resultText=`😢 실패... 보수 ${Math.floor(work.reward*.5).toLocaleString()}원을 받았어요.`;
+  } else if(roll > rate-25){
+    moneyMult=1.0; cls='';
+    resultText=`😊 완료! 보수 ${work.reward.toLocaleString()}원을 받았어요.`;
+  } else {
+    moneyMult=1.5; cls='good';
+    resultText=`🎉 대성공!! 보수 ${Math.floor(work.reward*1.5).toLocaleString()}원을 받았어요!`;
+  }
+  const earned = Math.floor(work.reward*moneyMult);
+  G.money += earned;
+
+  const mult = G.ailment==='burnout'?0.5 : G.ailment==='shy'?0.7 : 1.0;
+  applyEffects(work.effects, mult);
+
+  let stressAdd = G.ailment==='burnout' ? Math.floor(work.stress*1.3) : work.stress;
+  G.stress = Math.min(100, G.stress+stressAdd);
+
+  G.workCount[work.id] = (G.workCount[work.id]||0)+1;
+  addLog(`[알바] ${work.icon}${work.name} — ${resultText}`, cls);
+  advanceDay();
+
+  showModal(work.icon, work.name,
+    `${resultText}\n\n스트레스 +${stressAdd} 😰`,
+    [{text:'확인 ✅', action:()=>{ closeModal(); checkStressEvent(); }}]
+  );
+}
+
+// ════════════════════════════════════════
+//  교육
+// ════════════════════════════════════════
+function doEdu(edu){
+  if(G.actionDoneToday){showToast('오늘은 이미 활동했어요! 내일 또 해요~ 😊');return;}
+  if(G.ailment==='hospitalized'){showToast('입원 중이라 아무것도 할 수 없어요... 💤');return;}
+  if(G.money < edu.cost){showToast('돈이 부족해요! 💸');return;}
+
+  const mono = edu.mono[Math.floor(Math.random()*edu.mono.length)];
+  setMonologue(`"${mono}"`);
+
+  G.money -= edu.cost;
+  const mult = G.ailment==='burnout'?0.5 : G.ailment==='shy'?0.7 : 1.0;
+  applyEffects(edu.effects, mult);
+
+  let stressAdd = edu.stress;
+  G.stress = Math.min(100, G.stress+stressAdd);
+  G.eduCount[edu.id] = (G.eduCount[edu.id]||0)+1;
+
+  const effStr = Object.entries(edu.effects)
+    .map(([k,v])=>`${getStatName(k)} ${v>0?'+':''}${v}`)
+    .join(', ');
+
+  addLog(`[교육] ${edu.icon}${edu.name} — ${effStr} | -${edu.cost.toLocaleString()}원`,'good');
+  advanceDay();
+
+  showModal(edu.icon, edu.name+' 수강 완료! 🎓',
+    `${effStr}\n수강료: -${edu.cost.toLocaleString()}원 💸\n스트레스 +${stressAdd} 😰`,
+    [{text:'열심히 했어요! 💪', action:()=>{ closeModal(); checkStressEvent(); }}]
+  );
+}
+
+// ════════════════════════════════════════
+//  휴식
+// ════════════════════════════════════════
+function doRest(rest){
+  if(G.actionDoneToday){showToast('오늘은 이미 활동했어요! 내일 또 해요~ 😊');return;}
+  if(G.money < rest.cost){showToast('돈이 부족해요! 💸');return;}
+
+  const mono = rest.mono[Math.floor(Math.random()*rest.mono.length)];
+  setMonologue(`"${mono}"`);
+
+  if(rest.cost > 0) G.money -= rest.cost;
+  G.stress = Math.max(0, G.stress+rest.stress);
+
+  if(rest.id==='rest_friend'){
+    applyEffects(rest.effects);
+    const friendNames=['소율이','지민이','하은이','예린이','수아이','나연이','다은이','서현이'];
+    const friend = friendNames[Math.floor(Math.random()*friendNames.length)];
+    addLog(`[휴식] 👭 ${friend}네 집에 놀러갔어요! 사교성+6, 스트레스${rest.stress}`,'good');
+    advanceDay();
+    showModal('👭', `${friend}네 집에서 놀았어요! 🎉`,
+      `사교성이 올랐어요!\n스트레스가 ${Math.abs(rest.stress)} 감소했어요. 😊`,
+      [{text:'신나~! 💕', action:()=>{ closeModal(); checkFriendFightEvent(); }}]
+    );
+    return;
+  }
+
+  if(rest.id==='rest_vacation'){
+    applyEffects(rest.effects);
+    addLog('[휴식] ✈️ 바캉스를 떠났어요! 스트레스 대폭 감소 😊','good');
+    advanceDay();
+    triggerVacationEvent();
+    return;
+  }
+
+  applyEffects(rest.effects);
+  addLog(`[휴식] ${rest.icon}${rest.name} — 스트레스 ${rest.stress}`,'good');
+  advanceDay();
+  showModal(rest.icon, rest.name,
+    `기분이 좋아졌어요! 😊\n스트레스가 ${Math.abs(rest.stress)} 감소했어요. 💕`,
+    [{text:'😊 좋아!', action:closeModal}]
+  );
+}
+
+// ════════════════════════════════════════
+//  스트레스 이벤트
+// ════════════════════════════════════════
+function checkStressEvent(){
+  if(G.stress >= 90){
+    const roll = Math.random();
+    if(roll < 0.3){
+      G.ailment='hospitalized'; G.ailmentWeeksLeft=2; G.stress=60;
+      addLog('🏥 스트레스가 극에 달해 쓰러져 병원에 입원했어요...','bad');
+      showModal('🏥','쓰러졌어요! 😱',
+        '스트레스가 너무 쌓여 하랑이가 쓰러졌어요...\n2주간 입원 치료가 필요해요. 제발 쉬어요...',
+        [{text:'😢 알겠어...', action:closeModal}]
+      );
+    } else if(roll < 0.55){
+      G.runawayCount++; G.stress -= 30; G.stats.hp -= 10;
+      addLog('🎒 스트레스를 못 이기고 가출했어요...','bad');
+      showModal('🎒','가출했어요! 😱',
+        '하랑이가 집을 나갔어요...\n며칠 후 돌아왔지만 체력이 많이 떨어졌어요.',
+        [{text:'...돌아왔어 😢', action:closeModal}]
+      );
+    } else {
+      G.ailment='sick'; G.ailmentWeeksLeft=2; G.stress -= 20;
+      addLog('😷 스트레스로 감기 몸살에 걸렸어요!','bad');
+      showModal('😷','몸살에 걸렸어요! 😷',
+        '스트레스가 쌓여 감기 몸살이 났어요.\n2주간 체력이 매일 감소해요. 무리하지 마세요!',
+        [{text:'😢 조심할게...', action:closeModal}]
+      );
+    }
+  } else if(G.stress >= 70 && !G.ailment && Math.random()<0.18){
+    const ailments = ['princess','confident','shy','fight'];
+    const picked = ailments[Math.floor(Math.random()*ailments.length)];
+    G.ailment = picked; G.ailmentWeeksLeft = 1;
+    if(picked==='fight') G.stats.social = Math.max(0, G.stats.social-15);
+    addLog(`⚠️ 상태이상 발생: ${AILMENTS[picked].name}`,'bad');
+    showModal('⚠️','상태이상 발생! 😰',
+      `${AILMENTS[picked].name}\n${AILMENTS[picked].desc}\n1주일간 지속돼요.`,
+      [{text:'알겠어... 💦', action:closeModal}]
+    );
+  }
+  renderAll();
+}
+
+// ════════════════════════════════════════
+//  친구 싸움 이벤트
+// ════════════════════════════════════════
+function checkFriendFightEvent(){
+  if(Math.random() < 0.15){
+    const names=['소율이','지민이','하은이','예린이','수아이'];
+    const friend = names[Math.floor(Math.random()*names.length)];
+    showModal('😤',`${friend}랑 싸웠어요! 😱`,
+      `사소한 일로 ${friend}랑 크게 다퉜어요!\n1주일간 사교성이 많이 떨어진 상태예요.`,
+      [
+        {text:'😢 내가 잘못했어', action:()=>{
+          G.ailment='fight'; G.ailmentWeeksLeft=1;
+          G.stats.social=Math.max(0,G.stats.social-18);
+          addLog(`😤 ${friend}랑 싸웠어요. 사교성이 떨어졌어요.`,'bad');
+          closeModal(); renderAll();
+        }},
+        {text:'😤 내가 맞아!', action:()=>{
+          G.stats.humor=Math.min(100,G.stats.humor+5);
+          G.stats.social=Math.max(0,G.stats.social-10);
+          addLog(`😤 싸웠지만 기분은 후련해졌다(?)`,'');
+          closeModal(); renderAll();
+        }},
+      ]
+    );
+  } else {
+    closeModal();
+  }
+}
+
+// ════════════════════════════════════════
+//  바캉스 이벤트
+// ════════════════════════════════════════
+function triggerVacationEvent(){
+  const ev = VACATION_EVENTS[Math.floor(Math.random()*VACATION_EVENTS.length)];
+  const choices = ev.choices.map(c=>({
+    text: c.text,
+    action: ()=>{
+      const mult = 2.2;
+      applyEffects(c.effects, mult);
+      if(c.stress) G.stress = Math.min(100, G.stress+c.stress);
+
+      const effStr = Object.entries(c.effects)
+        .map(([k,v])=>`${getStatName(k)} ${v*mult>0?'+':''}${Math.round(v*mult)}`)
+        .join(', ');
+
+      document.getElementById('modal-result').style.display = 'block';
+      document.getElementById('modal-result').textContent = `${c.result}\n\n📊 ${effStr}`;
+      document.getElementById('modal-btns').innerHTML = '';
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-pink';
+      btn.textContent = '집으로 돌아가기 🏠';
+      btn.onclick = ()=>{ closeModal(); renderAll(); };
+      document.getElementById('modal-btns').appendChild(btn);
+      addLog(`[바캉스] ${ev.title} — ${c.result}`,'event');
+      renderAll();
+    }
+  }));
+  showModal(ev.icon, `✈️ 바캉스 이벤트!\n${ev.title}`, ev.desc, choices);
+}
+
+// ════════════════════════════════════════
+//  엔딩 판정
+// ════════════════════════════════════════
+function triggerEnding(){
+  // 배드 엔딩 (극단적 상태)
+  if(G.stress>=95 && G.stats.hp<=10){
+    const e = ENDINGS.find(x=>x.id==='e_bad_stress');
+    unlockEnding('e_bad_stress');
+    showEndingScreen(e); return;
+  }
+
+  // 히든 엔딩 (우선 체크)
+  const hidden = ENDINGS.filter(e=>e.rare&&e.rare.includes('히든'));
+  for(const e of hidden){
+    if(e.cond(G)){ unlockEnding(e.id); showEndingScreen(e); return; }
+  }
+
+  // 일반 엔딩 (조건 충족하는 것 중 가장 희귀한 것)
+  const normal = ENDINGS.filter(e=>
+    !e.rare?.includes('히든') && e.id!=='e_normal' && e.id!=='e_bad_stress' && e.cond(G)
+  );
+  // ⭐⭐⭐ > ⭐⭐ > ⭐ 우선
+  const rarityOrder = ['⭐⭐⭐','⭐⭐','⭐'];
+  for(const r of rarityOrder){
+    const filtered = normal.filter(e=>e.rare===r);
+    if(filtered.length>0){
+      const picked = filtered[Math.floor(Math.random()*filtered.length)];
+      unlockEnding(picked.id); showEndingScreen(picked); return;
+    }
+  }
+
+  // 기본 엔딩
+  unlockEnding('e_normal');
+  showEndingScreen(ENDINGS.find(e=>e.id==='e_normal'));
+}
+
+function unlockEnding(id){
+  const saved = JSON.parse(localStorage.getItem('harang_endings')||'[]');
+  if(!saved.includes(id)){ saved.push(id); localStorage.setItem('harang_endings',JSON.stringify(saved)); }
+}
+
+function showEndingScreen(ending){
+  document.getElementById('ending-icon').textContent = ending.icon;
+  document.getElementById('ending-title').textContent = ending.name;
+  document.getElementById('ending-sub').textContent = ending.rare||'';
+  document.getElementById('ending-desc').textContent = ending.desc;
+
+  const stats = document.getElementById('ending-stats');
+  stats.innerHTML = '<p style="font-weight:800;margin-bottom:7px">📊 최종 스테이터스</p>';
+  STAT_DEFS.forEach(def=>{
+    stats.innerHTML += `<p>${def.name}: <b>${G.stats[def.key]||0}</b></p>`;
+  });
+  stats.innerHTML += `<p>💰 최종 잔액: <b>${G.money.toLocaleString()}원</b></p>`;
+  stats.innerHTML += `<p>😰 최종 스트레스: <b>${G.stress}</b></p>`;
+  stats.innerHTML += `<p>📅 총 경과 일수: <b>${G.totalDays}일</b></p>`;
+
+  localStorage.removeItem('harang_save');
+  showScreen('screen-ending');
+}
+
+// ════════════════════════════════════════
+//  앨범
+// ════════════════════════════════════════
+function showAlbum(){
+  const unlocked = JSON.parse(localStorage.getItem('harang_endings')||'[]');
+  const allEndings = ENDINGS; // bad_stress 포함 전체
+  document.getElementById('album-count').textContent = unlocked.length;
+  document.getElementById('album-total').textContent = allEndings.length;
+
+  const grid = document.getElementById('album-grid');
+  grid.innerHTML = '';
+  allEndings.forEach(e=>{
+    const isUnlocked = unlocked.includes(e.id);
+    const card = document.createElement('div');
+    card.className = 'album-card' + (isUnlocked?' unlocked':' locked');
+    card.innerHTML = `
+      <div class="end-icon">${isUnlocked?e.icon:'🔒'}</div>
+      <div class="end-name">${isUnlocked?e.name:'???'}</div>
+      <div class="end-rare">${isUnlocked?(e.rare||''):''}</div>`;
+    grid.appendChild(card);
+  });
+  showScreen('screen-album');
+}
+
+// ════════════════════════════════════════
+//  모달
+// ════════════════════════════════════════
+function showModal(icon, title, desc, choices=[]){
+  document.getElementById('modal-icon').textContent = icon;
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-desc').textContent = desc;
+  document.getElementById('modal-result').style.display = 'none';
+  document.getElementById('modal-result').textContent = '';
+
+  const btns = document.getElementById('modal-btns');
+  btns.innerHTML = '';
+  choices.forEach(c=>{
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-pink';
+    btn.textContent = c.text;
+    btn.onclick = c.action;
+    btns.appendChild(btn);
+  });
+  document.getElementById('modal-overlay').className = 'modal-overlay show';
+}
+function closeModal(){
+  document.getElementById('modal-overlay').className = 'modal-overlay';
+  renderAll();
+}
+
+// ════════════════════════════════════════
+//  혼잣말
+// ════════════════════════════════════════
+function setMonologue(text){
+  document.getElementById('monologue').textContent = text;
+}
+
+// ════════════════════════════════════════
+//  로그
+// ════════════════════════════════════════
+function addLog(text, cls=''){
+  if(!G.log) G.log=[];
+  G.log.unshift({text, cls});
+  if(G.log.length>40) G.log.pop();
+  renderLog();
+}
+
+// ════════════════════════════════════════
+//  토스트
+// ════════════════════════════════════════
+function showToast(msg){
+  const el = document.createElement('div');
+  el.style.cssText = [
+    'position:fixed','top:20px','left:50%','transform:translateX(-50%)',
+    'background:#333','color:#fff','padding:10px 22px',
+    'border-radius:50px','font-size:13px','font-weight:700',
+    'z-index:9999','white-space:nowrap',
+    'animation:fadeInOut 2.2s ease forwards',
+  ].join(';');
+  el.textContent = msg;
+  if(!document.getElementById('toast-style')){
+    const s=document.createElement('style');
+    s.id='toast-style';
+    s.textContent='@keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(-8px);}15%{opacity:1;transform:translateX(-50%) translateY(0);}80%{opacity:1;}100%{opacity:0;transform:translateX(-50%) translateY(-8px);}}';
+    document.head.appendChild(s);
+  }
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 2200);
+}
+
+// ════════════════════════════════════════
+//  초기화
+// ════════════════════════════════════════
+window.onload = function(){
+  checkContinueBtn();
+  // 앨범 총 개수 초기 표시
+  const el = document.getElementById('album-total');
+  if(el) el.textContent = ENDINGS.length;
+};
+</script>
+</body>
+</html>
