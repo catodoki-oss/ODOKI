@@ -48,15 +48,37 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:var
 .topbar{background:linear-gradient(90deg,var(--pk),var(--pu));color:#fff;border-radius:var(--ra);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700}
 .abanner{background:#fff3cd;border:2px solid #ffc107;border-radius:11px;padding:8px 13px;font-size:12px;font-weight:700;color:#856404;display:none}
 .abanner.show{display:block}
+
+/* ★ 계절/바캉스 이미지 배너 */
+.season-banner{width:100%;border-radius:var(--ra);overflow:hidden;box-shadow:var(--sh);background:linear-gradient(135deg,#ffe4f0,#f0e4ff);display:flex;align-items:center;justify-content:center;min-height:160px;max-height:200px}
+.season-banner img{width:100%;max-height:200px;object-fit:cover;border-radius:var(--ra);display:block}
+.season-banner .season-fallback{font-size:64px;padding:20px}
+
+/* ★ 아르바이트 이미지 배너 */
+.work-img-banner{width:100%;border-radius:var(--ra);overflow:hidden;box-shadow:var(--sh);display:none;background:#fff;align-items:center;justify-content:center;min-height:130px;max-height:170px}
+.work-img-banner.show{display:flex}
+.work-img-banner img{width:100%;max-height:170px;object-fit:cover;border-radius:var(--ra);display:block}
+
+/* ★ 상태이상 팝업 이미지 */
+.ailment-popup-img{width:120px;height:120px;object-fit:cover;border-radius:14px;margin:0 auto 10px;display:block;box-shadow:var(--sh)}
+
+/* 캐릭터 카드 */
 .ccard{background:var(--ca);border-radius:var(--ra);box-shadow:var(--sh);padding:13px;display:flex;gap:13px;align-items:center}
 .cavt{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,#ffe4f0,#f0e4ff);display:flex;align-items:center;justify-content:center;font-size:48px;border:3px solid var(--pk);flex-shrink:0}
 .cinfo{flex:1}
 .cname{font-size:16px;font-weight:800;color:var(--pu)}
 .csub{font-size:11px;color:#bbb;margin-top:2px;margin-bottom:4px}
 .cmono{font-size:12px;color:#777;font-style:italic;background:var(--pkl);border-radius:9px;padding:6px 10px;line-height:1.6;min-height:34px}
+
+/* ★ 스테이터스 카드 — 접기/펼치기 */
 .stcard{background:var(--ca);border-radius:var(--ra);box-shadow:var(--sh);padding:12px 14px}
-.sttitle{font-size:12px;font-weight:700;color:#bbb;margin-bottom:9px}
-.stgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.stcard-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.sttitle{font-size:12px;font-weight:700;color:#bbb}
+.st-toggle-btn{background:none;border:none;cursor:pointer;font-size:16px;color:#bbb;padding:2px 6px;border-radius:6px;transition:transform .25s}
+.st-toggle-btn.open{transform:rotate(180deg)}
+.stbody{overflow:hidden;transition:max-height .3s ease,opacity .3s ease;max-height:0;opacity:0}
+.stbody.open{max-height:500px;opacity:1}
+.stgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
 .strow{display:flex;align-items:center;gap:5px}
 .stlb{font-size:11px;width:38px;flex-shrink:0;font-weight:700}
 .stbw{flex:1;background:#f0f0f0;border-radius:10px;height:7px;overflow:hidden}
@@ -157,6 +179,8 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:var
 .mbtns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:#ffb6c1;border-radius:10px}
+@keyframes bnc{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes fadeup{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 </style>
 </head>
 <body>
@@ -164,9 +188,9 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:var
 <!-- 타이틀 화면 -->
 <div id="st" class="screen active">
   <div class="tbox">
-    <img src="imgs/title.png" class="tlogo-img" alt="하랑이메이커" onerror="this.style.display='none';document.getElementById('tlogo-fallback').style.display='block'">
+    <img src="imgs/title.png" class="tlogo-img" alt="하랑이메이커"
+         onerror="this.style.display='none';document.getElementById('tlogo-fallback').style.display='block'">
     <div id="tlogo-fallback" style="font-size:72px;margin-bottom:8px;animation:bnc 2s infinite;display:none">👧</div>
-    <style>@keyframes bnc{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}</style>
     <div class="tname">하랑이메이커</div>
     <div class="tsub">10살 하랑이의 1년 성장 이야기 💕<br>과연 어떤 멋진 어른이 될까요? 🦋</div>
     <div class="tbtns">
@@ -183,17 +207,36 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:var
   <div class="abadge">✨ 달성: <span id="acnt">0</span> / <span id="atot">0</span></div>
   <div class="agrid" id="agrid" style="margin-top:12px"></div>
   <br>
-  <button class="btn bp" onclick="goScreen('st')">🏠 타이틀로</button>
+  <button class="btn bp" onclick="goScreen('st');checkCont()">🏠 타이틀로</button>
 </div>
 
 <!-- 게임 화면 -->
 <div id="sg" class="screen">
   <div class="gw">
+
+    <!-- 상단 날짜/돈 -->
     <div class="topbar">
       <div id="uidate">🗓 1월</div>
       <div id="uimoney">💰 5,000원</div>
     </div>
+
+    <!-- 알림 배너 -->
     <div class="abanner" id="abanner"></div>
+
+    <!-- ★ 계절/바캉스 하랑이 이미지 배너 -->
+    <div class="season-banner" id="seasonBanner">
+      <img id="seasonImg" src="" alt="하랑이 일러스트"
+           onerror="this.style.display='none';document.getElementById('seasonFallback').style.display='block'">
+      <div id="seasonFallback" class="season-fallback" style="display:none">🌸</div>
+    </div>
+
+    <!-- ★ 아르바이트 이미지 배너 -->
+    <div class="work-img-banner" id="workImgBanner">
+      <img id="workImg" src="" alt="아르바이트 하랑이"
+           onerror="this.style.display='none'">
+    </div>
+
+    <!-- 캐릭터 카드 -->
     <div class="ccard">
       <div class="cavt" id="cavt">👧</div>
       <div class="cinfo">
@@ -202,37 +245,53 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:var
         <div class="cmono" id="cmono">오늘도 열심히 해볼까!</div>
       </div>
     </div>
+
+    <!-- ★ 스테이터스 카드 — 기본 접힘 -->
     <div class="stcard">
-      <div class="sttitle">📊 스테이터스</div>
-      <div class="stgrid" id="stgrid"></div>
-      <div class="ssrow">
-        <div class="sslb">😰 스트레스</div>
-        <div class="ssbw"><div class="ssb" id="ssb" style="width:0%"></div></div>
-        <div class="ssv" id="ssv">0</div>
+      <div class="stcard-header" onclick="toggleStatus()">
+        <div class="sttitle">📊 스테이터스 (눌러서 확인)</div>
+        <button class="st-toggle-btn" id="stToggleBtn">▼</button>
+      </div>
+      <div class="stbody" id="stbody">
+        <div class="stgrid" id="stgrid"></div>
+        <div class="ssrow">
+          <div class="sslb">😰 스트레스</div>
+          <div class="ssbw"><div class="ssb" id="ssb" style="width:0%"></div></div>
+          <div class="ssv" id="ssv">0</div>
+        </div>
       </div>
     </div>
+
+    <!-- 스케줄 카드 -->
     <div class="schcard" id="schcard">
-      <div class="schtit" id="schtit"></div>
+      <div class="schtit" id="schtit">📅 이달의 스케줄</div>
       <div class="mcal" id="mcal"></div>
       <div class="spick">
         <div class="sptit" id="sptit">1주차 일정을 선택하세요</div>
         <div class="sptabs">
-          <button class="sptab active" id="ptw" onclick="switchTab('work')">알바</button>
-          <button class="sptab" id="pte" onclick="switchTab('edu')">교육</button>
-          <button class="sptab" id="ptr" onclick="switchTab('rest')">휴식</button>
+          <button class="sptab active" id="ptw" onclick="switchTab('work')">💼 알바</button>
+          <button class="sptab" id="pte" onclick="switchTab('edu')">📚 교육</button>
+          <button class="sptab" id="ptr" onclick="switchTab('rest')">🛋 휴식</button>
         </div>
         <div class="splist" id="splist"></div>
       </div>
       <div class="schsum" id="schsum">0 / 4주 선택됨</div>
       <div class="approw">
-        <button class="btn bp bs" id="appbtn" onclick="approveSchedule()" disabled>📋 이달 스케줄 확정!</button>
+        <button class="btn bp bs" id="appbtn" onclick="approveSchedule()" disabled>
+          📋 이달 스케줄 확정!
+        </button>
       </div>
     </div>
+
+    <!-- 로그 -->
     <div class="logcard" id="logcard"></div>
+
+    <!-- 저장/타이틀 -->
     <div class="svrow">
       <button class="btn bu bs" onclick="saveG()">💾 저장</button>
       <button class="btn bg2 bs" onclick="confirmTitle()">🏠 타이틀</button>
     </div>
+
   </div>
 </div>
 
@@ -240,7 +299,8 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:var
 <div id="se" class="screen">
   <div class="ebox">
     <div class="efw" id="efw">🎉🎊🎉🎊🎉</div>
-    <img id="ending-img" src="" class="ending-img" alt="" style="display:none">
+    <img id="ending-img" src="" class="ending-img" alt="" style="display:none"
+         onerror="this.style.display='none'">
     <div class="eico" id="eico">🌟</div>
     <div class="etit" id="etit">엔딩</div>
     <div class="esub" id="esub"></div>
@@ -253,7 +313,7 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:var
   </div>
 </div>
 
-<!-- 대화창 -->
+<!-- 대화창 오버레이 -->
 <div class="dov" id="dov">
   <div class="dbox">
     <div class="dhdr">
@@ -275,7 +335,7 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:var
   </div>
 </div>
 
-<!-- 모달 -->
+<!-- 공용 모달 -->
 <div class="mov" id="mov">
   <div class="mbox">
     <div class="mico" id="mico">✨</div>
@@ -285,11 +345,22 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:var
   </div>
 </div>
 
+<!-- 토스트 -->
+<div id="toast" style="display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.75);color:#fff;padding:9px 22px;border-radius:30px;
+  font-size:13px;font-weight:700;z-index:9999;pointer-events:none;
+  animation:fadeup .3s ease;white-space:nowrap"></div>
 <script>
+'use strict';
+
 // ══════════════════════════════════════════
-//  상수 & 데이터
+//  전역 변수
 // ══════════════════════════════════════════
-var SMAX = 120;
+var G = null;
+
+// ══════════════════════════════════════════
+//  스탯 정의
+// ══════════════════════════════════════════
 var SD = [
   {key:'hp',        name:'체력',   color:'#5cc87a'},
   {key:'charm',     name:'매력',   color:'#ff8fa3'},
@@ -298,402 +369,599 @@ var SD = [
   {key:'humor',     name:'개그력', color:'#ffd166'},
   {key:'social',    name:'사교성', color:'#c9b1ff'},
   {key:'intel',     name:'지능',   color:'#74c0fc'},
-  {key:'art',       name:'예술성', color:'#f783ac'},
+  {key:'art',       name:'예술',   color:'#f783ac'},
   {key:'stamina',   name:'지구력', color:'#63e6be'},
-  {key:'faith',     name:'신앙심', color:'#b8c0ff'}
+  {key:'faith',     name:'신앙',   color:'#e599f7'}
 ];
-var MN = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-var G = null;
-var DQ = [], DI = 0;
 
-// 이미지 파일명 매핑 (imgs/ 폴더 기준)
+// ══════════════════════════════════════════
+//  ★ 계절 이미지 매핑
+// ══════════════════════════════════════════
+var SEASON_IMGS = {
+  1:'imgs/img_winter_snow.png', 2:'imgs/img_winter_snow.png',
+  3:'imgs/img_spring_star.png', 4:'imgs/img_spring_star.png', 5:'imgs/img_spring_star.png',
+  6:'imgs/img_summer_heat.png', 7:'imgs/img_summer_heat.png', 8:'imgs/img_summer_heat.png',
+  9:'imgs/img_autumn_walk.png',10:'imgs/img_autumn_walk.png',11:'imgs/img_autumn_walk.png',
+  12:'imgs/img_winter_snow.png'
+};
+var SEASON_FALLBACK = {
+  1:'❄️',2:'❄️',3:'🌸',4:'🌸',5:'🌸',
+  6:'☀️',7:'☀️',8:'☀️',9:'🍂',10:'🍂',11:'🍂',12:'❄️'
+};
+
+// ★ 바캉스 이미지 매핑
+var VAC_IMGS = {
+  beach:     'imgs/img_vac_beach.png',
+  valley:    'imgs/img_vac_valley.png',
+  waterpark: 'imgs/img_vac_waterpark.png',
+  orchard:   'imgs/img_vac_orchard.png',
+  ski:       'imgs/img_vac_ski.png',
+  xmas:      'imgs/img_vac_xmas.png',
+  pampas:    'imgs/img_vac_pampas.png'
+};
+
+// ★ 아르바이트 이미지 매핑
+var WORK_IMGS = {
+  convenience: 'imgs/img_work_convenience.png',
+  tutoring:    'imgs/img_work_tutoring.png',
+  cafe:        'imgs/img_work_cafe.png',
+  delivery:    'imgs/img_work_delivery.png',
+  cleaning:    'imgs/img_work_cleaning.png',
+  flyer:       'imgs/img_work_flyer.png',
+  farm:        'imgs/img_work_farm.png',
+  babysit:     'imgs/img_work_babysit.png',
+  harvest:     'imgs/img_work_harvest.png',
+  picking:     'imgs/img_work_picking.png',
+  youtuber:    'imgs/img_work_youtuber.png',
+  progamer:    'imgs/img_work_progamer.png',
+  housework:   'imgs/img_work_housework.png'
+};
+
+// ★ 상태이상 이미지 매핑
+var AILMENT_IMGS = {
+  sick:     'imgs/img_sick_bed.png',
+  burnout:  'imgs/img_burnout.png',
+  princess: 'imgs/img_princess.png',
+  shy:      'imgs/img_shy.png'
+};
+
+// ══════════════════════════════════════════
+//  상태이상 정의
+// ══════════════════════════════════════════
+var AILMENTS = {
+  sick:{
+    name:'🤒 감기몸살',
+    desc:'이불 뒤집어쓰고 침대에 누운 하랑이\n"으... 몸이 너무 안 좋아요 😷"',
+    img:'imgs/img_sick_bed.png',
+    statMod:{hp:-2,stamina:-2}, stressMod:+5
+  },
+  burnout:{
+    name:'🤯 번아웃',
+    desc:'책상에 엎드려 축 늘어진 하랑이\n"아무것도 하기 싫어... 🤯"',
+    img:'imgs/img_burnout.png',
+    statMod:{diligence:-3,intel:-1}, stressMod:+8
+  },
+  princess:{
+    name:'👸 공주병',
+    desc:'거울 앞에서 포즈 잡는 하랑이\n"나는 특별한 대우를 받아야 해! 👸"',
+    img:'imgs/img_princess.png',
+    statMod:{morality:-3,social:-2}, stressMod:+3
+  },
+  shy:{
+    name:'😳 극도의 수줍음',
+    desc:'이불 속에 숨어버린 하랑이\n"사람들 무서워... 숨고 싶어 😳"',
+    img:'imgs/img_shy.png',
+    statMod:{social:-4,charm:-2}, stressMod:+6
+  }
+};
+
+// ══════════════════════════════════════════
+//  바캉스 정의
+// ══════════════════════════════════════════
+var VACATIONS = [
+  {key:'beach',     name:'🏖 해수욕장',      month:[7,8],     cost:18000,
+   effects:{hp:+12,charm:+8,stamina:+6},   stressMod:-20,
+   desc:'파도 소리와 함께 신나는 여름 바캉스!'},
+  {key:'valley',    name:'🏞 계곡',          month:[6,7,8],   cost:8000,
+   effects:{hp:+10,stamina:+8,faith:+4},   stressMod:-15,
+   desc:'시원한 계곡물에 발을 담그며 힐링!'},
+  {key:'waterpark', name:'🎢 워터파크',      month:[7,8],     cost:25000,
+   effects:{hp:+8,humor:+10,social:+6},    stressMod:-18,
+   desc:'슬라이드를 타며 신나게 놀아요!'},
+  {key:'orchard',   name:'🍎 과수원마을',    month:[9,10],    cost:12000,
+   effects:{hp:+6,diligence:+8,art:+5},    stressMod:-12,
+   desc:'사과와 포도를 직접 따는 체험!'},
+  {key:'ski',       name:'⛷ 스키장',        month:[12,1,2],  cost:30000,
+   effects:{hp:+5,stamina:+12,humor:+8},   stressMod:-14,
+   desc:'설원을 달리는 짜릿한 스키!'},
+  {key:'xmas',      name:'🎄 크리스마스마켓',month:[12],      cost:15000,
+   effects:{charm:+10,social:+8,faith:+6}, stressMod:-16,
+   desc:'반짝이는 크리스마스 야경 속 하랑이!'},
+  {key:'pampas',    name:'🌾 억새평원',      month:[10,11],   cost:9000,
+   effects:{art:+10,faith:+8,intel:+5},    stressMod:-13,
+   desc:'억새밭에서 점프하는 하랑이!'}
+];
+
+// ══════════════════════════════════════════
+//  교육 정의
+// ══════════════════════════════════════════
+var EDUS = [
+  {key:'math',      name:'📐 수학 학원',     cost:8000,
+   effects:{intel:+7,diligence:+4},         stress:+5,
+   desc:'어려운 문제를 풀어냈어요!'},
+  {key:'english',   name:'🔤 영어 학원',     cost:7000,
+   effects:{intel:+6,social:+3},            stress:+4,
+   desc:'Hello! 영어 실력이 올랐어요!'},
+  {key:'art',       name:'🎨 미술 학원',     cost:6000,
+   effects:{art:+8,charm:+4},               stress:-2,
+   desc:'그림 그리는 게 너무 즐거워요!'},
+  {key:'music',     name:'🎵 음악 학원',     cost:6000,
+   effects:{art:+6,faith:+5,charm:+3},      stress:-3,
+   desc:'음악이 마음을 채워줘요!'},
+  {key:'taekwondo', name:'🥋 태권도',        cost:5000,
+   effects:{hp:+6,stamina:+7,diligence:+4}, stress:+2,
+   desc:'얍! 실력이 늘었어요!'},
+  {key:'book',      name:'📚 독서',          cost:0,
+   effects:{intel:+5,morality:+4,faith:+3}, stress:-4,
+   desc:'책 속에 세상이 있어요!'},
+  {key:'volunteer', name:'💝 봉사활동',      cost:0,
+   effects:{morality:+9,social:+6,faith:+4},stress:-5,
+   desc:'누군가에게 도움이 됐어요!'},
+  {key:'coding',    name:'💻 코딩 학원',     cost:9000,
+   effects:{intel:+9,diligence:+5},         stress:+6,
+   desc:'버그를 잡았어요! 뿌듯해!'},
+  {key:'speech',    name:'🎤 스피치 학원',   cost:7000,
+   effects:{charm:+7,social:+6,humor:+4},   stress:+3,
+   desc:'자신있게 말할 수 있게 됐어요!'},
+  {key:'science',   name:'🔬 과학 학원',     cost:8000,
+   effects:{intel:+8,diligence:+5},         stress:+5,
+   desc:'실험이 성공했어요!'},
+  {key:'beauty',    name:'💄 뷰티 클래스',   cost:6000,
+   effects:{charm:+8,art:+5,social:+3},     stress:-1,
+   desc:'더 예뻐진 것 같아요!'},
+  {key:'choir',     name:'🎼 성가대 활동',   cost:0,
+   effects:{faith:+7,social:+5,art:+4},     stress:-6,
+   desc:'하나님께 찬양을 드렸어요!'},
+  {key:'ethics',    name:'📖 철학/윤리 수업',cost:5000,
+   effects:{morality:+8,intel:+4,faith:+3}, stress:+2,
+   desc:'올바른 가치관이 자라났어요!'},
+  {key:'church',    name:'⛪ 성당 일 돕기',  cost:0,
+   effects:{faith:+8,morality:+7,social:+4},stress:-7,
+   desc:'봉사하며 마음이 따뜻해졌어요!'},
+  {key:'marathon',  name:'🏃 마라톤 훈련',   cost:3000,
+   effects:{stamina:+9,hp:+6,diligence:+4}, stress:+4,
+   desc:'완주했어요! 정말 뿌듯해요!'}
+];
+
+// ══════════════════════════════════════════
+//  휴식 정의
+// ══════════════════════════════════════════
+var RESTS = [
+  {key:'sleep',    name:'😴 푹 자기',       cost:0,
+   effects:{hp:+12,stamina:+6},             stress:-18,
+   desc:'충분한 수면은 최고의 보약!'},
+  {key:'walk',     name:'🚶 산책',          cost:0,
+   effects:{hp:+6,stamina:+4,faith:+3},     stress:-12,
+   desc:'맑은 공기를 마시며 기분 전환!'},
+  {key:'friend',   name:'👫 친구 만남',     cost:3000,
+   effects:{social:+9,humor:+6,charm:+4},   stress:-14,
+   desc:'친구와 함께라면 무엇이든 즐거워!'},
+  {key:'movie',    name:'🎬 영화 감상',     cost:5000,
+   effects:{art:+5,humor:+5,intel:+3},      stress:-10,
+   desc:'감동적인 영화를 봤어요!'},
+  {key:'game',     name:'🎮 게임',          cost:0,
+   effects:{humor:+7,social:+3},            stress:-8,
+   desc:'게임으로 스트레스 해소!'},
+  {key:'cooking',  name:'🍳 요리하기',      cost:2000,
+   effects:{diligence:+5,art:+4,charm:+3},  stress:-9,
+   desc:'맛있는 요리를 만들었어요!'},
+  {key:'prayer',   name:'🙏 기도/묵상',     cost:0,
+   effects:{faith:+9,morality:+5,hp:+4},    stress:-12,
+   desc:'마음이 평안해졌어요!'},
+  {key:'shopping', name:'🛍 쇼핑',          cost:8000,
+   effects:{charm:+7,humor:+4},             stress:-6,
+   desc:'새 옷을 샀어요! 기분 최고!'},
+  {key:'vacation', name:'✈️ 바캉스 가기',   cost:0,
+   effects:{},                              stress:-5,
+   desc:'어디로 떠날까요?', isVacation:true}
+];
+
+// ══════════════════════════════════════════
+//  아르바이트 정의
+// ══════════════════════════════════════════
+var WORKS = [
+  {key:'convenience',name:'🏪 편의점 알바',  pay:12000,
+   effects:{diligence:+5,social:+4},         stress:+8,  minMonth:1,
+   desc:'손님 응대가 익숙해졌어요!'},
+  {key:'tutoring',   name:'📖 과외 선생님',  pay:20000,
+   effects:{intel:+6,diligence:+5},          stress:+6,  minMonth:3,
+   desc:'가르치면서 더 많이 배워요!'},
+  {key:'cafe',       name:'☕ 카페 알바',    pay:13000,
+   effects:{charm:+6,social:+5},             stress:+7,  minMonth:1,
+   desc:'라떼 아트 실력이 늘었어요!'},
+  {key:'delivery',   name:'🛵 배달 알바',    pay:15000,
+   effects:{stamina:+7,diligence:+4},        stress:+10, minMonth:1,
+   desc:'체력이 많이 늘었어요!'},
+  {key:'cleaning',   name:'🧹 청소 알바',    pay:10000,
+   effects:{diligence:+6,morality:+4},       stress:+5,  minMonth:1,
+   desc:'깨끗해진 공간이 뿌듯해요!'},
+  {key:'flyer',      name:'📢 전단지 배포',  pay:8000,
+   effects:{stamina:+4,social:+3},           stress:+4,  minMonth:1,
+   desc:'발이 좀 아프지만 보람차요!'},
+  {key:'farm',       name:'🌾 농장 체험',    pay:11000,
+   effects:{hp:+5,stamina:+6,faith:+4},      stress:+3,  minMonth:4,
+   desc:'자연 속에서 일하니 좋아요!'},
+  {key:'babysit',    name:'👶 아이 돌봄',    pay:14000,
+   effects:{morality:+7,social:+5,hp:+3},    stress:+6,  minMonth:1,
+   desc:'아이들이 너무 귀여워요!'},
+  {key:'harvest',    name:'🍅 수확 알바',    pay:11000,
+   effects:{hp:+5,stamina:+6,diligence:+3},  stress:+4,  minMonth:8,
+   desc:'땀 흘려 일하니 보람있어요!'},
+  {key:'picking',    name:'🍇 과일 따기',    pay:10000,
+   effects:{hp:+4,stamina:+5,art:+3},        stress:+3,  minMonth:9,
+   desc:'과일 향기가 너무 좋아요!'},
+  {key:'youtuber',   name:'📹 유튜버 알바',  pay:16000,
+   effects:{charm:+6,humor:+6,social:+4},    stress:+7,  minMonth:1,
+   desc:'구독자가 늘고 있어요!'},
+  {key:'progamer',   name:'🎮 게임 대회',    pay:18000,
+   effects:{intel:+6,diligence:+5,humor:+3}, stress:+8,  minMonth:1,
+   desc:'실력이 점점 늘고 있어요!'},
+  {key:'housework',  name:'🏠 집안일 도우미', pay:9000,
+   effects:{diligence:+6,morality:+4,art:+3},stress:+3,  minMonth:1,
+   desc:'요리 실력이 쑥쑥 늘었어요!'}
+];
+
+// ══════════════════════════════════════════
+//  랜덤 이벤트 정의
+// ══════════════════════════════════════════
+var EVENTS = [
+  {id:'e1',  name:'💌 편지 도착',     prob:.12,
+   effects:{charm:+5,faith:+3},       stress:-5,
+   msg:'누군가 하랑이에게 편지를 보내왔어요! 마음이 따뜻해졌어요.'},
+  {id:'e2',  name:'🤧 감기',          prob:.08,
+   effects:{hp:-6,stamina:-4},        stress:+8,
+   msg:'갑자기 감기에 걸렸어요! 몸이 으슬으슬해요.', ailment:'sick'},
+  {id:'e3',  name:'🏆 학교 대회',     prob:.10,
+   effects:{intel:+7,charm:+5},       stress:+4,
+   msg:'학교 대회에서 좋은 성적을 거뒀어요!'},
+  {id:'e4',  name:'👫 새 친구',       prob:.12,
+   effects:{social:+8,humor:+5},      stress:-8,
+   msg:'새로운 친구가 생겼어요! 너무 반가워요.'},
+  {id:'e5',  name:'😢 친구와 다툼',   prob:.07,
+   effects:{social:-5,hp:-3},         stress:+10,
+   msg:'친한 친구와 오해가 생겼어요. 마음이 무거워요.'},
+  {id:'e6',  name:'🌟 칭찬 받음',     prob:.12,
+   effects:{charm:+5,morality:+4},    stress:-7,
+   msg:'선생님께 크게 칭찬 받았어요! 기분이 날아갈 것 같아요.'},
+  {id:'e7',  name:'📱 SNS 인기',      prob:.08,
+   effects:{charm:+6,social:+5},      stress:+3,
+   msg:'올린 사진이 엄청난 반응을 얻었어요!'},
+  {id:'e8',  name:'💸 지갑 분실',     prob:.05,
+   effects:{},                        stress:+12,
+   msg:'지갑을 잃어버렸어요! 3,000원이 사라졌어요.', moneyDelta:-3000},
+  {id:'e9',  name:'🎁 용돈 받음',     prob:.10,
+   effects:{},                        stress:-5,
+   msg:'할머니께서 용돈을 주셨어요!', moneyDelta:5000},
+  {id:'e10', name:'🌧 우울한 날',     prob:.07,
+   effects:{hp:-3,faith:-2},          stress:+7,
+   msg:'이유 없이 눈물이 나는 날이에요.'},
+  {id:'e11', name:'✝️ 은혜로운 예배', prob:.08,
+   effects:{faith:+9,morality:+5},    stress:-12,
+   msg:'예배 중 깊은 감동을 받았어요. 마음이 충만해요.'},
+  {id:'e12', name:'💪 운동 열심히',   prob:.10,
+   effects:{hp:+7,stamina:+6},        stress:-5,
+   msg:'오늘따라 운동이 너무 잘 됐어요!'},
+  {id:'e13', name:'🎨 전시회 관람',   prob:.07,
+   effects:{art:+6,intel:+4},         stress:-6,
+   msg:'멋진 전시회를 보고 영감을 받았어요!'},
+  {id:'e14', name:'🌈 무지개 발견',   prob:.06,
+   effects:{faith:+4,humor:+3},       stress:-8,
+   msg:'하늘에 무지개가 떴어요! 기분이 너무 좋아요.'},
+  {id:'e15', name:'📺 TV 출연 제안',  prob:.04,
+   effects:{charm:+8,social:+6},      stress:+5,
+   msg:'TV 프로그램에서 출연 제안이 왔어요! 떨리지만 설레요.'}
+];
+
+// 남자친구 이벤트
+var BF_EVENTS = [
+  {id:'bf1', prob:.15,
+   msg:'💕 남자친구와 데이트했어요!',
+   effects:{charm:+5,social:+4,humor:+3}, stress:-10},
+  {id:'bf2', prob:.10,
+   msg:'💌 달달한 문자를 받았어요!',
+   effects:{charm:+3,faith:+2},           stress:-8},
+  {id:'bf3', prob:.08,
+   msg:'💔 남자친구와 다퉜어요...',
+   effects:{social:-4,hp:-3},             stress:+10},
+  {id:'bf4', prob:.06,
+   msg:'🌹 꽃다발을 받았어요!',
+   effects:{charm:+8,art:+3},             stress:-12},
+  {id:'bf5', prob:.04,
+   msg:'💔 남자친구와 헤어졌어요...',
+   effects:{social:-6,hp:-4,faith:-3},    stress:+18, breakup:true}
+];
+
+// ══════════════════════════════════════════
+//  엔딩 이미지 파일명 매핑
+// ══════════════════════════════════════════
 var ENDING_IMGS = {
-  'e_idol':'imgs/e_idol.png',
-  'e_doctor':'imgs/e_doctor.png',
-  'e_artist':'imgs/e_artist.png',
-  'e_comedian':'imgs/e_comedian.png',
-  'e_athlete':'imgs/e_athlete.png',
-  'e_nun':'imgs/e_nun.png',
-  'e_youtuber':'imgs/e_youtuber.png',
-  'e_progamer':'imgs/e_progamer.png',
-  'e_chef':'imgs/e_chef.png',
-  'e_diplomat':'imgs/e_diplomat.png',
-  'e_writer':'imgs/e_writer.png',
-  'e_teacher':'imgs/e_teacher.png',
-  'e_designer':'imgs/e_designer.png',
-  'e_scientist':'imgs/e_scientist.png',
-  'e_farmer':'imgs/e_farmer.png',
-  'e_welfare':'imgs/e_welfare.png',
-  'e_musician':'imgs/e_musician.png',
-  'e_traveler':'imgs/e_traveler.png',
-  'e_love':'imgs/e_love.png',
-  'e_normal':'imgs/e_normal.png',
-  'e_goddess':'imgs/e_goddess.png',
-  'e_hero':'imgs/e_hero.png',
-  'e_witch':'imgs/e_witch.png',
-  'e_timetravel':'imgs/e_timetravel.png',
-  'e_perfect':'imgs/e_perfect.png',
+  'e_idol':       'imgs/e_idol.png',
+  'e_doctor':     'imgs/e_doctor.png',
+  'e_artist':     'imgs/e_artist.png',
+  'e_comedian':   'imgs/e_comedian.png',
+  'e_athlete':    'imgs/e_athlete.png',
+  'e_nun':        'imgs/e_nun.png',
+  'e_youtuber':   'imgs/e_youtuber.png',
+  'e_progamer':   'imgs/e_progamer.png',
+  'e_chef':       'imgs/e_chef.png',
+  'e_diplomat':   'imgs/e_diplomat.png',
+  'e_writer':     'imgs/e_writer.png',
+  'e_teacher':    'imgs/e_teacher.png',
+  'e_designer':   'imgs/e_designer.png',
+  'e_scientist':  'imgs/e_scientist.png',
+  'e_farmer':     'imgs/e_farmer.png',
+  'e_welfare':    'imgs/e_welfare.png',
+  'e_musician':   'imgs/e_musician.png',
+  'e_traveler':   'imgs/e_traveler.png',
+  'e_love':       'imgs/e_love.png',
+  'e_normal':     'imgs/e_normal.png',
+  'e_goddess':    'imgs/e_goddess.png',
+  'e_hero':       'imgs/e_hero.png',
+  'e_witch':      'imgs/e_witch.png',
+  'e_timetravel': 'imgs/e_timetravel.png',
+  'e_perfect':    'imgs/e_perfect.png',
   'e_burnout_end':'imgs/e_burnout_end.png'
 };
 
-var AILMENTS = {
-  sick:         {name:'😷 감기 몸살',  desc:'매달 체력-4.'},
-  burnout:      {name:'🤯 번아웃',     desc:'모든 효과 50% 감소.'},
-  princess:     {name:'👑 공주병',     desc:'매력+1/달, 성품-2/달.'},
-  confident:    {name:'💪 자신만만',   desc:'성실+1/달, 성품-1/달.'},
-  shy:          {name:'😶 소극적',     desc:'모든 활동 효과 30% 감소.'},
-  fight:        {name:'😤 친구와 싸움',desc:'사교성-15 상태 지속.'},
-  hospitalized: {name:'🏥 입원',       desc:'이번 달은 활동 불가.'}
-};
-
-function getWorkList(month) {
-  var s = (month<=2||month===12)?'winter':(month<=5)?'spring':(month<=8)?'summer':'autumn';
-  var a = [
-    {id:'housework', name:'집안일 돕기', icon:'🏠', reward:2500, stress:7,
-     effects:{hp:-1,diligence:3,morality:2},
-     mono:['청소하면 마음도 깨끗해져~','먼지야 사라져라!','집이 반짝반짝!'],
-     desc:'성실+3, 성품+2, 체력-1'},
-    {id:'church', name:'성당일 돕기', icon:'⛪', reward:2000, stress:5,
-     effects:{morality:4,social:2,faith:3},
-     mono:['신이시여 오늘도 잘 부탁드립니다~','봉사는 마음이 따뜻해져!','헌화 꽂기 완료!'],
-     desc:'성품+4, 사교성+2, 신앙심+3'},
-    {id:'progamer', name:'프로게이머', icon:'🎮', reward:12000, stress:18,
-     effects:{intel:3,stamina:-2,hp:-2,humor:2},
-     mono:['오늘도 클러치 플레이!','손가락이 아파도 참아야해...','MVP 먹었다!!'],
-     desc:'지능+3, 개그력+2, 지구력-2, 체력-2'},
-    {id:'youtuber', name:'유튜버', icon:'📹', reward:10000, stress:14,
-     effects:{charm:3,humor:4,social:2,diligence:-1},
-     mono:['구독 좋아요 알림설정!','오늘 영상 편집 어떻게 하지...','조회수 대박나라~!'],
-     desc:'매력+3, 개그력+4, 사교성+2'},
-    {id:'catcafe', name:'고양이카페', icon:'🐱', reward:7000, stress:7,
-     effects:{charm:3,social:3,hp:1,morality:1},
-     mono:['냥냥이들아 안녕~!','이 아이 너무 귀여워!','고양이 털 알러지 없어서 다행이야'],
-     desc:'매력+3, 사교성+3, 체력+1'},
-    {id:'foodsample', name:'마트 시식대', icon:'🥄', reward:5000, stress:10,
-     effects:{charm:2,humor:3,social:3,hp:-1},
-     mono:['어서오세요~ 한번 드셔보세요!','웃으면서 권해야 해~','오늘 몇 개나 팔았을까?'],
-     desc:'매력+2, 개그력+3, 사교성+3'}
-  ];
-  var sea = {
-    spring:[{id:'harvest', name:'봄 수확 알바', icon:'🌱', reward:8000, stress:12,
-             effects:{hp:2,stamina:3,diligence:3,charm:-1},
-             mono:['새싹이 너무 예뻐!','흙냄새 좋다~','농부가 되는 건 어떨까?'],
-             desc:'체력+2, 지구력+3, 성실+3'}],
-    summer:[{id:'beach', name:'해변 카페', icon:'☀️', reward:9000, stress:10,
-             effects:{charm:4,social:4,hp:1,diligence:-1},
-             mono:['파도 소리 들으면서 일하니까 좋다~','선크림 발랐지?','여름 최고야!'],
-             desc:'매력+4, 사교성+4, 체력+1'}],
-    autumn:[{id:'picking', name:'사과/포도 따기', icon:'🍎', reward:8000, stress:11,
-             effects:{hp:2,stamina:3,diligence:2,art:1},
-             mono:['사과가 빨갛게 익었다~','포도 한 알 먹어도 되겠지?','가을 냄새 좋아!'],
-             desc:'체력+2, 지구력+3, 성실+2'}],
-    winter:[{id:'xmasdeco', name:'크리스마스 장식', icon:'🎄', reward:9000, stress:9,
-             effects:{art:4,charm:3,social:2,hp:-1},
-             mono:['트리 꾸미기 너무 재밌어!','이 별은 여기에~','산타가 되는 기분이야!'],
-             desc:'예술성+4, 매력+3, 사교성+2'}]
-  };
-  return a.concat(sea[s]||[]);
-}
-
-var EDU = [
-  {id:'edu_hp',    name:'체육 학원',      icon:'🏃', cost:4000, stress:6,  effects:{hp:5,stamina:3},
-   mono:['몸이 건강해야 뭐든 할 수 있어!','오늘도 달린다~'], desc:'체력+5, 지구력+3'},
-  {id:'edu_charm', name:'뷰티 클래스',    icon:'💄', cost:5000, stress:5,  effects:{charm:5,art:2},
-   mono:['예뻐지는 건 노력이야!','자신감이 생겨!'], desc:'매력+5, 예술성+2'},
-  {id:'edu_intel', name:'수학/과학 학원', icon:'🔬', cost:6000, stress:8,  effects:{intel:6,diligence:2},
-   mono:['공부가 제일 쉬웠어요...는 거짓말','그래도 배우는 건 좋아!'], desc:'지능+6, 성실+2'},
-  {id:'edu_art',   name:'미술 학원',      icon:'🎨', cost:5500, stress:5,  effects:{art:6,charm:1},
-   mono:['색깔 조합이 너무 재밌어!','예술은 자유다!'], desc:'예술성+6, 매력+1'},
-  {id:'edu_social',name:'스피치 학원',    icon:'🎤', cost:4500, stress:6,  effects:{social:5,charm:2,humor:2},
-   mono:['말을 잘하면 인생이 편해진다구!','당당하게 말해야지!'], desc:'사교성+5, 매력+2, 개그력+2'},
-  {id:'edu_moral', name:'철학/윤리 수업', icon:'📖', cost:3500, stress:5,  effects:{morality:6,intel:2,faith:2},
-   mono:['인간이란 무엇인가...','착하게 살자!'], desc:'성품+6, 지능+2, 신앙심+2'},
-  {id:'edu_faith', name:'성가대 활동',    icon:'🎵', cost:2500, stress:4,  effects:{faith:6,social:3,art:1},
-   mono:['노래하면 마음이 평화로워져','신앙심이 깊어지는 것 같아'], desc:'신앙심+6, 사교성+3, 예술성+1'},
-  {id:'edu_humor', name:'개그 학원',      icon:'😂', cost:4000, stress:7,  effects:{humor:7,social:2,charm:1},
-   mono:['웃기는 것도 기술이야!','오늘 개그 대박이었어!'], desc:'개그력+7, 사교성+2, 매력+1'},
-  {id:'edu_stam',  name:'마라톤 훈련',    icon:'🏅', cost:4000, stress:9,  effects:{stamina:7,hp:3,diligence:2},
-   mono:['포기란 없다!','발이 아파도 달린다!'], desc:'지구력+7, 체력+3, 성실+2'},
-  {id:'edu_read',  name:'독서 클럽',      icon:'📚', cost:3000, stress:4,  effects:{diligence:5,intel:3,morality:2},
-   mono:['책은 마음의 양식이야~','독서가 이렇게 재밌을 줄이야'], desc:'성실+5, 지능+3, 성품+2'}
-];
-
-function getRestList(month) {
-  var s = (month<=2||month===12)?'winter':(month<=5)?'spring':(month<=8)?'summer':'autumn';
-  var vd = {
-    spring:['🌸 벚꽃 명소','🌿 봄 들판','🌷 튤립 정원'],
-    summer:['🏖 해수욕장','🏔 계곡','🌊 워터파크'],
-    autumn:['🍁 단풍 산','🍇 과수원 마을','🌾 억새 평원'],
-    winter:['⛷ 스키장','🏔 설경 명소','🎄 크리스마스 마켓']
-  };
-  var dest = vd[s][Math.floor(Math.random()*3)];
-  return [
-    {id:'rest_home', name:'집에서 쉬기', icon:'🛋', cost:0, stress:-22, effects:{hp:4},
-     mono:['누워있는게 최고야~','유튜브 보다 잠들겠지~'], desc:'스트레스-22, 체력+4'},
-    {id:'rest_out', name:'밖으로 놀러가기', icon:'🎡', cost:2000, stress:-16, effects:{hp:2,charm:2,humor:2},
-     mono:['바람 쐬러 나가야지!','기분 전환이 필요해~'], desc:'스트레스-16, 매력+2, 개그력+2'},
-    {id:'rest_friend', name:'친구 집에 놀러가기', icon:'👭', cost:1000, stress:-18, effects:{social:4,humor:2,charm:1},
-     mono:['친구랑 놀면 시간이 너무 빨리 가!','오늘은 친구네 가자!'], desc:'스트레스-18, 사교성+4'},
-    {id:'rest_vacation', name:'바캉스 ('+dest+')', icon:'✈️', cost:18000, stress:-38, effects:{hp:7,charm:3,social:2},
-     mono:['여행은 언제나 설레~!','어디서 뭘 먹을까?'], desc:'스트레스-38, 체력+7. 이벤트 발생!'}
-  ];
-}
-
-var VEVENTS = [
-  {icon:'🗑', title:'길가에 쓰레기가!', desc:'바캉스 중 날카로운 쓰레기가 떨어져 있다. 어떻게 할까?',
-   choices:[{text:'🙋 줍는다',result:'성품이 올랐다! 날카로운 것에 베여 체력이 떨어졌다...',eff:{morality:20,hp:-15}},
-            {text:'🚶 그냥 지나친다',result:'성품이 떨어졌다. 양심이 찔린다...',eff:{morality:-15}}]},
-  {icon:'🐔', title:'닭이 먼저일까, 알이 먼저일까?', desc:'여행 중 만난 철학자 할아버지가 묻는다.',
-   choices:[{text:'🐔 닭이 먼저!',result:'창조론적 관점이야! 지능이 올랐다.',eff:{intel:18,morality:8}},
-            {text:'🥚 알이 먼저!',result:'진화론적 사고야! 지능이 올랐다.',eff:{intel:18,humor:8}},
-            {text:'🤷 모르겠어요',result:'그게 정답이야! 겸손함이 지혜야! 성품이 크게 올랐다.',eff:{morality:22,intel:12}}]},
-  {icon:'🌿', title:'깻잎 논쟁!', desc:'식당에서 친구 남자친구가 친구 입에 깻잎을 떼어줬다. 어떻게 생각해?',
-   choices:[{text:'😡 당연히 이상하지!',result:'격렬한 토론! 사교성 올랐다.',eff:{social:12,humor:8},sx:8},
-            {text:'😊 그럴 수도 있지~',result:'이해심이 넓어! 매력 사교성 올랐다.',eff:{charm:18,social:12}},
-            {text:'🍽 깻잎이 뭔데요?',result:'모두가 폭소! 개그력 크게 올랐다.',eff:{humor:25,charm:8}}]},
-  {icon:'🌊', title:'파도가 너무 높아!', desc:'바다에서 파도가 갑자기 높아졌다. 저 멀리 어린아이가 위험해 보인다!',
-   choices:[{text:'🏊 뛰어들어 구한다',result:'아이를 구했다! 체력 감소, 성품 지구력 올랐다.',eff:{morality:25,stamina:15,hp:-20}},
-            {text:'📢 어른에게 알린다',result:'현명한 판단! 지능 성품 올랐다.',eff:{intel:18,morality:18}},
-            {text:'📸 일단 사진 찍는다',result:'SNS에 올렸다가 욕을 먹었다. 매력 떨어졌다.',eff:{charm:-20,humor:-8}}]},
-  {icon:'👻', title:'숙소에 귀신이?!', desc:'숙소에서 한밤중에 이상한 소리가 들린다...',
-   choices:[{text:'🔍 확인하러 간다',result:'알고 보니 옆방 사람이 야식을 먹고 있었다. 개그력 올랐다.',eff:{humor:22,hp:3}},
-            {text:'🙈 이불 뒤집어쓴다',result:'무서워서 밤새 못 잤다. 체력 떨어졌다.',eff:{hp:-18,stamina:-8}},
-            {text:'📱 귀신 퇴치 영상 튼다',result:'유튜브 알고리즘 덕분에 아침까지 봤다. 지능 올랐다.',eff:{intel:8,humor:18}}]},
-  {icon:'🍦', title:'아이스크림을 흘렸다!', desc:'힘들게 산 아이스크림을 땅에 떨어뜨렸다. 5초 룰을 적용할까?',
-   choices:[{text:'🙌 5초 룰! 줍는다',result:'배탈이 났다. 체력 감소 개그력 올랐다.',eff:{hp:-18,humor:18}},
-            {text:'😭 포기하고 새로 산다',result:'새 아이스크림은 더 맛있었다. 매력 올랐다.',eff:{charm:14,hp:4}},
-            {text:'🐶 강아지에게 준다',result:'강아지가 행복해했다. 성품 크게 올랐다.',eff:{morality:20,charm:8}}]}
-];
-
-var W4EVENTS = [
-  {icon:'💌',title:'팬레터가 왔어요!',
-   desc:'하랑이에게 익명의 팬레터가 도착했다. 두근두근...',
-   choices:[
-     {text:'💗 설레며 읽는다',result:'매력과 사교성이 올랐다!',eff:{charm:12,social:10}},
-     {text:'😳 부끄러워서 안 읽는다',result:'서랍에 넣었다. 성품이 올랐다.',eff:{morality:8}}]},
-  {icon:'🎁',title:'길에서 지갑을 주웠어요!',
-   desc:'길을 걷다가 지갑을 발견했다. 안에 돈이 꽤 들어있는 것 같다...',
-   choices:[
-     {text:'🚔 경찰서에 가져간다',result:'주인을 찾아줬다. 성품 올랐다! 사례금도 받았다!',eff:{morality:20,social:5},money:3000},
-     {text:'💰 그냥 갖는다',result:'성품이 크게 떨어졌다. 양심이 찔려요.',eff:{morality:-25},sx:10}]},
-  {icon:'🐶',title:'강아지가 따라와요!',
-   desc:'집에 오는 길에 귀여운 강아지가 따라온다.',
-   choices:[
-     {text:'🏠 집에 데려간다',result:'강아지 친구가 생겼다! 체력 성품 올랐다.',eff:{hp:8,morality:15,charm:8}},
-     {text:'📢 주인을 찾아준다',result:'주인이 너무 고마워했다. 성품 사교성 올랐다.',eff:{morality:12,social:12}}]},
-  {icon:'🌧',title:'갑자기 폭우가!',
-   desc:'외출 중 갑자기 폭우가 쏟아졌다. 우산이 없는데...',
-   choices:[
-     {text:'🏃 뛰어서 집에 간다',result:'흠뻑 젖었다. 체력 감소 지구력 올랐다.',eff:{hp:-12,stamina:12}},
-     {text:'☕ 카페에서 기다린다',result:'독서를 했다. 지능 올랐다.',eff:{intel:10},sx:-8},
-     {text:'🤝 모르는 사람과 우산을 같이 쓴다',result:'사교성 매력 크게 올랐다.',eff:{social:18,charm:10}}]},
-  {icon:'💪',title:'체육대회가 열렸어요!',
-   desc:'동네 체육대회에 참가할 기회가 생겼다!',
-   choices:[
-     {text:'🏆 열심히 참가한다',result:'3등을 했다! 체력 지구력 사교성 올랐다.',eff:{hp:15,stamina:15,social:10}},
-     {text:'📸 구경만 한다',result:'응원을 열심히 했다. 사교성 올랐다.',eff:{social:8,humor:6}}]},
-  {icon:'🎨',title:'미술 공모전!',
-   desc:'지역 미술 공모전 참가 신청을 받고 있다.',
-   choices:[
-     {text:'🖌 열심히 그린다',result:'입선했다! 예술성 매력 올랐다.',eff:{art:20,charm:10}},
-     {text:'🤷 귀찮아서 패스',result:'나중에 후회했다.',eff:{diligence:-5}}]},
-  {icon:'🌟',title:'TV 오디션 공고!',
-   desc:'TV 오디션 프로그램 참가자를 모집하고 있다!',
-   choices:[
-     {text:'🎤 지원해본다',result:'예선 통과! 매력 예술성 사교성 올랐다.',eff:{charm:18,art:12,social:10}},
-     {text:'😅 자신 없어서 패스',result:'아쉽지만 다음 기회에...',eff:{humor:5}}]},
-  {icon:'📚',title:'도서관에서 신기한 책 발견!',
-   desc:'도서관에서 제목도 없는 신기한 책을 발견했다.',
-   choices:[
-     {text:'📖 읽어본다',result:'엄청난 지식을 얻었다! 지능 크게 올랐다.',eff:{intel:22,morality:8}},
-     {text:'🏃 무서워서 도망',result:'나중에 그 책이 희귀본이었다는 걸 알았다.',eff:{humor:10}}]},
-  {icon:'🤒',title:'갑자기 몸이 안 좋아요...',
-   desc:'이번 달 무리했는지 몸이 좋지 않다. 병원에 가야 할 것 같다...',
-   isHospital:true,
-   choices:[
-     {text:'🏥 병원에 간다',result:'진찰 결과 입원이 필요하다고 한다. 다음 달은 쉬어야 해요.',eff:{hp:-10}},
-     {text:'💊 약만 먹는다',result:'약을 먹었지만 상태가 더 나빠졌다. 결국 입원...',eff:{hp:-20}}]},
-  {icon:'💕',title:'두근두근... 고백을 받았어요!',
-   desc:'같은 반 친구가 하랑이에게 고백을 했다! 어떻게 할까?',
-   choices:[
-     {text:'💗 좋아해요!',result:'남자친구가 생겼다! 매력 사교성 올랐다.',eff:{charm:20,social:15},boyfriend:true},
-     {text:'😊 그냥 친구로 지내자',result:'친구 관계가 더 돈독해졌다. 사교성 올랐다.',eff:{social:12,morality:8}}]},
-  {icon:'🏆',title:'학교 대표로 뽑혔어요!',
-   desc:'선생님이 하랑이를 학교 대표로 추천하셨다!',
-   choices:[
-     {text:'💪 열심히 하겠습니다!',result:'대표로서 활약했다! 성실 사교성 자신감 올랐다.',eff:{diligence:18,social:12,charm:8}},
-     {text:'😅 부담돼서 사양한다',result:'선생님이 아쉬워하셨다. 스트레스 감소.',eff:{morality:5},sx:-5}]},
-  {icon:'🎪',title:'마을 축제가 열렸어요!',
-   desc:'동네에 큰 축제가 열렸다! 어떻게 즐길까?',
-   choices:[
-     {text:'🎤 무대에 올라간다',result:'관객들의 환호를 받았다! 매력 개그력 올랐다.',eff:{charm:18,humor:14,social:10}},
-     {text:'🍡 맛있는 것만 먹는다',result:'행복한 시간이었다. 체력 올랐다.',eff:{hp:10},sx:-10},
-     {text:'📷 사진 찍으러 다닌다',result:'예쁜 사진을 많이 찍었다. 예술성 올랐다.',eff:{art:14,charm:8}}]}
-];
-
+// ══════════════════════════════════════════
+//  엔딩 정의 (밸런스 조정 완료)
+// ══════════════════════════════════════════
 var ENDINGS = [
-  {id:'e_idol',     name:'아이돌 스타',          icon:'🌟', rare:'⭐⭐⭐',
-   hint:'매력과 예술성, 사교성을 골고루 높여봐요. (매력 75↑, 예술성 55↑, 사교성 50↑)',
-   cond:function(g){return g.stats.charm>=75&&g.stats.art>=55&&g.stats.social>=50;},
-   desc:'하랑이는 눈부신 매력과 예술성으로 아이돌 그룹에 데뷔했습니다. 수많은 팬들의 사랑을 받으며 빛나는 무대 위에서 꿈을 이루었어요.'},
-  {id:'e_doctor',   name:'의사 선생님',           icon:'👩‍⚕️',rare:'⭐⭐⭐',
-   hint:'지능과 성실함을 꾸준히 쌓고, 성품도 잊지 마세요. (지능 80↑, 성실 65↑, 성품 45↑)',
-   cond:function(g){return g.stats.intel>=80&&g.stats.diligence>=65&&g.stats.morality>=45;},
-   desc:'하랑이는 뛰어난 지능과 성실함으로 의대에 합격했습니다. 사람들을 돕는 훌륭한 의사가 되었어요.'},
-  {id:'e_artist',   name:'유명 예술가',           icon:'🎨', rare:'⭐⭐',
-   hint:'예술성을 집중적으로 키우고 매력도 함께 올려봐요. (예술성 75↑, 매력 45↑)',
-   cond:function(g){return g.stats.art>=75&&g.stats.charm>=45;},
-   desc:'하랑이의 작품이 갤러리에 전시되었습니다. 독창적인 감성으로 많은 이들에게 감동을 주는 예술가가 되었어요.'},
-  {id:'e_comedian', name:'개그우먼',              icon:'😂', rare:'⭐⭐',
-   hint:'개그력과 사교성을 높이면 웃음의 달인이 될 수 있어요. (개그력 75↑, 사교성 55↑)',
-   cond:function(g){return g.stats.humor>=75&&g.stats.social>=55;},
-   desc:'하랑이의 천재적인 유머 감각이 빛을 발했습니다. TV 개그 프로그램의 간판 스타가 되었어요!'},
-  {id:'e_athlete',  name:'국가대표 선수',         icon:'🏅', rare:'⭐⭐⭐',
-   hint:'체력과 지구력, 성실함을 꾸준히 단련해보세요. (지구력 80↑, 체력 65↑, 성실 55↑)',
-   cond:function(g){return g.stats.stamina>=80&&g.stats.hp>=65&&g.stats.diligence>=55;},
-   desc:'하랑이는 끊임없는 훈련 끝에 국가대표로 선발되었습니다. 올림픽 무대에서 태극마크를 달고 뛰었어요!'},
-  {id:'e_nun',      name:'수녀님',                icon:'✝️', rare:'⭐⭐',
-   hint:'신앙심과 성품, 봉사 정신을 키워보세요. (신앙심 75↑, 성품 65↑, 사교성 35↑)',
-   cond:function(g){return g.stats.faith>=75&&g.stats.morality>=65&&g.stats.social>=35;},
-   desc:'하랑이는 깊은 신앙심과 봉사 정신으로 수녀의 길을 택했습니다. 많은 이들에게 빛과 소금이 되었어요.'},
-  {id:'e_youtuber', name:'인기 유튜버',           icon:'📹', rare:'⭐⭐',
-   hint:'유튜버 알바를 6회 이상 하면서 매력(45↑)과 개그력(38↑)을 키워봐요.',
-   cond:function(g){return (g.workCount.youtuber||0)>=6&&g.stats.charm>=45&&g.stats.humor>=38;},
-   desc:'하랑이의 유튜브 채널 구독자가 100만을 돌파했습니다! 콘텐츠 크리에이터로 성공적인 삶을 살게 되었어요.'},
-  {id:'e_progamer', name:'프로게이머',            icon:'🎮', rare:'⭐⭐',
-   hint:'프로게이머 알바를 6회 이상 하면서 지능(55↑)을 높여봐요.',
-   cond:function(g){return (g.workCount.progamer||0)>=6&&g.stats.intel>=55;},
-   desc:'하랑이는 게임 대회에서 우승을 거머쥐었습니다! 세계적인 프로게이머로 이름을 알리게 되었어요.'},
-  {id:'e_chef',     name:'스타 셰프',             icon:'👨‍🍳',rare:'⭐⭐',
-   hint:'집안일 알바를 8회 이상 하고 성실(55↑)과 예술성(35↑)을 키워봐요.',
-   cond:function(g){return (g.workCount.housework||0)>=8&&g.stats.diligence>=55&&g.stats.art>=35;},
-   desc:'집안일을 하며 갈고닦은 요리 실력이 빛을 발했습니다. 유명 레스토랑의 스타 셰프가 되었어요!'},
-  {id:'e_diplomat', name:'외교관',                icon:'🌍', rare:'⭐⭐⭐',
-   hint:'지능, 사교성, 성품을 모두 골고루 높여야 해요. (지능 70↑, 사교성 70↑, 성품 55↑)',
-   cond:function(g){return g.stats.intel>=70&&g.stats.social>=70&&g.stats.morality>=55;},
-   desc:'하랑이의 뛰어난 사교성과 도덕성이 인정받았습니다. 세계를 무대로 활약하는 외교관이 되었어요.'},
-  {id:'e_writer',   name:'베스트셀러 작가',       icon:'📚', rare:'⭐⭐',
-   hint:'지능과 예술성, 성실함을 함께 키워봐요. (지능 65↑, 예술성 58↑, 성실 45↑)',
-   cond:function(g){return g.stats.intel>=65&&g.stats.art>=58&&g.stats.diligence>=45;},
-   desc:'하랑이가 쓴 소설이 베스트셀러가 되었습니다! 독자들의 마음을 움직이는 작가로 자리매김했어요.'},
-  {id:'e_teacher',  name:'인기 선생님',           icon:'👩‍🏫',rare:'⭐',
-   hint:'성품(60↑)과 사교성(55↑), 성실함(50↑)이 고루 높으면 될 것 같아요.',
-   cond:function(g){return g.stats.morality>=60&&g.stats.social>=55&&g.stats.diligence>=50;},
-   desc:'하랑이는 학생들에게 사랑받는 선생님이 되었습니다. 따뜻한 마음으로 아이들의 꿈을 키워주고 있어요.'},
-  {id:'e_designer', name:'패션 디자이너',         icon:'👗', rare:'⭐⭐',
-   hint:'예술성(70↑)과 매력(60↑)을 집중적으로 높여봐요.',
-   cond:function(g){return g.stats.art>=70&&g.stats.charm>=60;},
-   desc:'하랑이의 독창적인 디자인이 패션쇼에서 주목받았습니다. 세계적인 패션 디자이너로 성장했어요!'},
-  {id:'e_scientist',name:'과학자',                icon:'🔬', rare:'⭐⭐⭐',
-   hint:'지능(85↑)과 성실함(70↑)을 최대한 높여보세요.',
-   cond:function(g){return g.stats.intel>=85&&g.stats.diligence>=70;},
-   desc:'하랑이의 연구가 세계적인 학술지에 실렸습니다! 인류의 발전에 기여하는 훌륭한 과학자가 되었어요.'},
-  {id:'e_farmer',   name:'행복한 농부',           icon:'🌾', rare:'⭐',
-   hint:'수확/과일 알바를 7회 이상 하고 체력(45↑)을 키워봐요.',
-   cond:function(g){return ((g.workCount.harvest||0)+(g.workCount.picking||0))>=7&&g.stats.hp>=45;},
-   desc:'하랑이는 자연 속에서 농사를 짓는 삶을 선택했습니다. 소박하지만 건강하고 행복한 나날을 보내고 있어요.'},
-  {id:'e_welfare',  name:'사회복지사',            icon:'🤝', rare:'⭐',
-   hint:'성품(65↑)과 사교성(65↑), 신앙심(35↑)을 함께 높여봐요.',
-   cond:function(g){return g.stats.morality>=65&&g.stats.social>=65&&g.stats.faith>=35;},
-   desc:'하랑이는 어려운 이웃을 돕는 사회복지사가 되었습니다. 따뜻한 세상을 만들어가는 소중한 존재예요.'},
-  {id:'e_musician', name:'뮤지션',                icon:'🎵', rare:'⭐⭐',
-   hint:'예술성(65↑)과 매력(50↑), 사교성(40↑)을 함께 키워봐요.',
-   cond:function(g){return g.stats.art>=65&&g.stats.charm>=50&&g.stats.social>=40;},
-   desc:'하랑이의 음악이 사람들의 마음을 울렸습니다. 감성적인 뮤지션으로 많은 사랑을 받고 있어요.'},
-  {id:'e_traveler', name:'세계여행가',            icon:'🗺', rare:'⭐',
-   hint:'바캉스를 4번 이상 가고 사교성(45↑)을 높여봐요.',
-   cond:function(g){return (g.vacationCount||0)>=4&&g.stats.social>=45;},
-   desc:'바캉스를 사랑했던 하랑이는 결국 세계 일주를 떠났습니다. 자유롭고 행복한 여행가의 삶을 살고 있어요.'},
-  {id:'e_love',     name:'행복한 연인',           icon:'💕', rare:'⭐⭐',
-   hint:'남자친구 이벤트를 만나보세요. 매력(50↑)이 높으면 유리해요.',
-   cond:function(g){return g.hasBoyfriend&&g.stats.charm>=50;},
-   desc:'하랑이는 소중한 사람을 만나 행복한 연애를 하고 있습니다. 서로를 아끼며 함께 성장하는 두 사람이에요.'},
-  {id:'e_normal',   name:'평범하지만 행복한 하루',icon:'🏡', rare:'⭐',
-   hint:'어떤 길을 걸어도 괜찮아요. 하랑이만의 속도로! (조건 없이 볼 수 있어요)',
-   cond:function(g){return true;},
-   desc:'화려하진 않지만, 하랑이는 자신만의 속도로 소중한 일상을 살아가고 있습니다. 평범함 속에서 행복을 찾은 하랑이예요.'},
-  {id:'e_goddess',  name:'신이 되었다',           icon:'🌈', rare:'🌟 히든',
-   hint:'[히든] 총 스탯 600↑, 성품 75↑, 신앙심 65↑. 모든 스탯을 골고루!',
-   cond:function(g){var t=0;for(var k in g.stats)t+=g.stats[k];return t>=600&&g.stats.morality>=75&&g.stats.faith>=65;},
-   desc:'모든 스탯이 극한까지 올라간 하랑이는 인간의 경계를 초월했습니다. 신화 속 존재가 되어 세상을 수호하는 전설이 되었어요.'},
-  {id:'e_hero',     name:'세상을 구한 영웅',      icon:'⚡', rare:'🌟 히든',
-   hint:'[히든] 체력 75↑, 지구력 75↑, 성품 70↑, 지능 65↑. 신체와 정신 모두!',
-   cond:function(g){return g.stats.hp>=75&&g.stats.stamina>=75&&g.stats.morality>=70&&g.stats.intel>=65;},
-   desc:'완벽한 신체와 정신을 갖춘 하랑이는 위기의 순간 세상을 구했습니다. 전설 속 영웅이 실존했던 거예요.'},
-  {id:'e_witch',    name:'마법사',                icon:'🔮', rare:'🌟 히든',
-   hint:'[히든] 지능 80↑, 예술성 75↑, 신앙심 55↑. 지식+예술+신비!',
-   cond:function(g){return g.stats.intel>=80&&g.stats.art>=75&&g.stats.faith>=55;},
-   desc:'하랑이는 고대 마법서를 발견하고 진짜 마법을 익혔습니다. 신비로운 마법사로서 새로운 세계를 탐험하고 있어요.'},
-  {id:'e_timetravel',name:'시간여행자',           icon:'⏳', rare:'🌟 히든',
-   hint:'[히든] 총 스탯 580↑, 지능 88↑. 극한의 지식을 쌓아보세요!',
-   cond:function(g){var t=0;for(var k in g.stats)t+=g.stats[k];return t>=580&&g.stats.intel>=88;},
-   desc:'극한의 지능을 가진 하랑이는 시간의 흐름을 이해하게 되었습니다. 과거와 미래를 자유롭게 여행하는 시간여행자가 되었어요.'},
-  {id:'e_perfect',  name:'완벽한 하랑이',         icon:'💎', rare:'🌟 히든',
-   hint:'[히든] 모든 스탯을 90 이상으로! 정말 어려운 도전이에요.',
-   cond:function(g){for(var i=0;i<SD.length;i++){if((g.stats[SD[i].key]||0)<90)return false;}return true;},
-   desc:'모든 스탯이 완벽하게 성장한 하랑이! 어떤 길을 걸어도 빛나는 존재가 되었습니다. 전설이 된 하랑이를 축하해요!'}
+  {id:'e_idol',      icon:'🌟', name:'아이돌 스타',          sub:'무대 위의 빛나는 별!',         rare:'⭐⭐⭐',
+   hint:'매력 45↑, 예술성 38↑, 사교성 30↑\n뷰티 클래스·미술 학원·스피치 학원을 꾸준히!',
+   desc:'하랑이는 화려한 무대 위에서 빛나는 아이돌 스타가 되었어요!\n매력과 예술성, 그리고 끝없는 노력이 만들어낸 결과예요. 수많은 팬들이 하랑이를 응원하고 있답니다 💕',
+   cond:function(g){return g.stats.charm>=45&&g.stats.art>=38&&g.stats.social>=30;}},
+
+  {id:'e_doctor',    icon:'👩‍⚕️', name:'명의 의사',          sub:'생명을 살리는 따뜻한 손!',     rare:'⭐⭐⭐',
+   hint:'지능 50↑, 성실 42↑, 성품 30↑\n수학/과학 학원·독서 클럽을 집중적으로!',
+   desc:'하랑이는 뛰어난 지능과 성실함으로 훌륭한 의사가 되었어요!\n아픈 사람들을 돌보는 따뜻한 마음이 많은 이들에게 희망이 되고 있어요 🏥',
+   cond:function(g){return g.stats.intel>=50&&g.stats.diligence>=42&&g.stats.morality>=30;}},
+
+  {id:'e_artist',    icon:'🎨', name:'천재 예술가',           sub:'세상을 색칠하는 붓!',           rare:'⭐⭐',
+   hint:'예술성 50↑, 매력 28↑\n미술 학원 집중!',
+   desc:'하랑이의 독창적인 예술 감각이 세상을 놀라게 했어요!\n갤러리마다 하랑이의 작품이 전시되고, 많은 사람들이 감동받고 있답니다 🖼️',
+   cond:function(g){return g.stats.art>=50&&g.stats.charm>=28;}},
+
+  {id:'e_comedian',  icon:'🤣', name:'국민 개그우먼',         sub:'웃음을 선물하는 사람!',         rare:'⭐⭐',
+   hint:'개그력 50↑, 사교성 35↑\n스피치 학원·이벤트를 활용해봐요!',
+   desc:'하랑이의 폭발적인 유머 감각이 온 나라를 웃음바다로 만들었어요!\n하랑이가 나오면 모두가 배꼽을 잡고 웃는답니다 😂',
+   cond:function(g){return g.stats.humor>=50&&g.stats.social>=35;}},
+
+  {id:'e_athlete',   icon:'🏅', name:'올림픽 금메달리스트',   sub:'한계를 넘는 도전자!',           rare:'⭐⭐⭐',
+   hint:'지구력 50↑, 체력 42↑, 성실 35↑\n마라톤 훈련·태권도를 꾸준히!',
+   desc:'하랑이는 강인한 체력과 지구력으로 올림픽 금메달을 목에 걸었어요!\n피나는 노력 끝에 이룬 값진 영광이에요 🥇',
+   cond:function(g){return g.stats.stamina>=50&&g.stats.hp>=42&&g.stats.diligence>=35;}},
+
+  {id:'e_nun',       icon:'🙏', name:'수녀님',                sub:'신앙으로 세상을 밝히는 빛!',     rare:'⭐⭐',
+   hint:'신앙심 45↑, 성품 42↑\n성가대·성당 일 돕기·철학/윤리 수업을 꾸준히!',
+   desc:'하랑이는 깊은 신앙심과 따뜻한 성품으로 수녀님의 길을 선택했어요.\n어려운 이웃을 돌보며 사랑을 실천하고 있답니다 ✝️',
+   cond:function(g){return g.stats.faith>=45&&g.stats.morality>=42;}},
+
+  {id:'e_youtuber',  icon:'📹', name:'인기 유튜버',           sub:'구독자 1000만의 크리에이터!',    rare:'⭐⭐',
+   hint:'유튜버 알바 3회↑, 매력 32↑, 개그력 28↑\n유튜버 알바를 꾸준히 선택해봐요!',
+   desc:'하랑이의 개성 넘치는 콘텐츠가 인터넷을 뒤흔들었어요!\n구독자 1000만을 돌파한 슈퍼 크리에이터가 되었답니다 🎬',
+   cond:function(g){return (g.workCount.youtuber||0)>=3&&g.stats.charm>=32&&g.stats.humor>=28;}},
+
+  {id:'e_progamer',  icon:'🎮', name:'프로게이머',            sub:'e스포츠의 전설!',               rare:'⭐⭐',
+   hint:'프로게이머 알바 3회↑, 지능 35↑\n프로게이머 알바를 꾸준히 선택해봐요!',
+   desc:'하랑이의 번뜩이는 두뇌와 집중력이 e스포츠 세계를 정복했어요!\n세계 대회 우승컵을 들어올리는 순간, 모두가 환호했답니다 🏆',
+   cond:function(g){return (g.workCount.progamer||0)>=3&&g.stats.intel>=35;}},
+
+  {id:'e_chef',      icon:'👩‍🍳', name:'스타 셰프',           sub:'맛으로 세상을 행복하게!',        rare:'⭐⭐',
+   hint:'집안일 알바 4회↑, 성실 35↑, 예술성 25↑\n집안일 알바와 독서 클럽을 함께!',
+   desc:'하랑이의 요리 실력이 미슐랭 스타를 받았어요!\n매일매일 맛있는 요리로 사람들의 마음을 따뜻하게 채워주고 있답니다 🍳',
+   cond:function(g){return (g.workCount.housework||0)>=4&&g.stats.diligence>=35&&g.stats.art>=25;}},
+
+  {id:'e_diplomat',  icon:'🌏', name:'외교관',                sub:'세계 평화를 위한 목소리!',       rare:'⭐⭐⭐',
+   hint:'지능 45↑, 사교성 45↑, 성품 35↑\n스피치 학원·철학/윤리 수업을 꾸준히!',
+   desc:'하랑이의 뛰어난 사교성과 지능이 세계 무대에서 빛을 발했어요!\n나라와 나라 사이의 다리가 되어 평화를 만들어가고 있답니다 🕊️',
+   cond:function(g){return g.stats.intel>=45&&g.stats.social>=45&&g.stats.morality>=35;}},
+
+  {id:'e_writer',    icon:'✍️', name:'베스트셀러 작가',       sub:'이야기로 세상을 바꾸는 사람!',   rare:'⭐⭐',
+   hint:'지능 42↑, 예술성 38↑, 성실 30↑\n독서 클럽·수학/과학 학원·미술 학원을 병행!',
+   desc:'하랑이의 감성적인 글이 수백만 독자의 마음을 움직였어요!\n하랑이의 책은 항상 베스트셀러 1위를 차지한답니다 📚',
+   cond:function(g){return g.stats.intel>=42&&g.stats.art>=38&&g.stats.diligence>=30;}},
+
+  {id:'e_teacher',   icon:'👩‍🏫', name:'훌륭한 선생님',       sub:'미래를 가르치는 스승!',          rare:'⭐',
+   hint:'성품 38↑, 성실 35↑, 사교성 32↑\n철학/윤리·독서 클럽·스피치 학원으로 쉽게 달성!',
+   desc:'하랑이는 따뜻한 마음과 성실함으로 아이들이 가장 좋아하는 선생님이 되었어요!\n하랑이의 가르침을 받은 학생들이 세상을 빛내고 있답니다 🏫',
+   cond:function(g){return g.stats.morality>=38&&g.stats.diligence>=35&&g.stats.social>=32;}},
+
+  {id:'e_designer',  icon:'👗', name:'패션 디자이너',         sub:'트렌드를 만드는 크리에이터!',    rare:'⭐⭐',
+   hint:'예술성 48↑, 매력 40↑\n미술 학원·뷰티 클래스를 집중적으로!',
+   desc:'하랑이의 독보적인 패션 감각이 세계 패션위크를 사로잡았어요!\n하랑이가 만든 옷은 전 세계 사람들이 입고 싶어한답니다 ✨',
+   cond:function(g){return g.stats.art>=48&&g.stats.charm>=40;}},
+
+  {id:'e_scientist', icon:'🔬', name:'노벨상 과학자',         sub:'인류의 미래를 여는 발견!',       rare:'⭐⭐⭐',
+   hint:'지능 55↑, 성실 48↑\n수학/과학 학원을 매달 선택하면 가능해요!',
+   desc:'하랑이의 끊임없는 탐구심이 인류 역사를 바꿀 발견을 이루어냈어요!\n노벨상 수상 소감에서 하랑이는 눈물을 흘렸답니다 🏆',
+   cond:function(g){return g.stats.intel>=55&&g.stats.diligence>=48;}},
+
+  {id:'e_farmer',    icon:'🌾', name:'행복한 농부',           sub:'대지와 함께하는 삶!',            rare:'⭐',
+   hint:'수확/과일 알바 합산 4회↑, 체력 28↑\n봄·가을 시즌 알바를 잘 활용해봐요!',
+   desc:'하랑이는 복잡한 세상을 떠나 자연 속에서 행복한 농부가 되었어요!\n직접 키운 채소와 과일로 이웃들과 나누는 삶이 너무 행복하답니다 🥕',
+   cond:function(g){return ((g.workCount.harvest||0)+(g.workCount.picking||0))>=4&&g.stats.hp>=28;}},
+
+  {id:'e_welfare',   icon:'💝', name:'사회복지사',            sub:'세상의 온기를 전하는 사람!',     rare:'⭐',
+   hint:'성품 42↑, 사교성 38↑\n성당 일 돕기·철학/윤리·스피치 학원으로 달성 가능!',
+   desc:'하랑이는 어려운 이웃을 위해 평생을 바치는 사회복지사가 되었어요!\n하랑이의 따뜻한 손길이 닿는 곳마다 희망이 피어난답니다 🌷',
+   cond:function(g){return g.stats.morality>=42&&g.stats.social>=38;}},
+
+  {id:'e_musician',  icon:'🎵', name:'클래식 음악가',         sub:'선율로 영혼을 울리는 연주자!',   rare:'⭐⭐',
+   hint:'예술성 42↑, 매력 32↑, 사교성 28↑\n성가대 활동·미술 학원을 꾸준히!',
+   desc:'하랑이의 아름다운 연주가 콘서트홀을 가득 채웠어요!\n음악으로 사람들의 마음을 치유하는 특별한 음악가가 되었답니다 🎻',
+   cond:function(g){return g.stats.art>=42&&g.stats.charm>=32&&g.stats.social>=28;}},
+
+  {id:'e_traveler',  icon:'✈️', name:'세계 여행가',           sub:'지구를 누비는 자유로운 영혼!',   rare:'⭐',
+   hint:'바캉스 2회↑, 사교성 28↑\n휴식 탭에서 바캉스를 자주 선택해봐요!',
+   desc:'하랑이는 세계 100개국을 여행하며 다양한 문화를 경험했어요!\n여행 에세이와 사진집이 많은 사람들에게 사랑받고 있답니다 🗺️',
+   cond:function(g){return (g.vacationCount||0)>=2&&g.stats.social>=28;}},
+
+  {id:'e_love',      icon:'💑', name:'행복한 결혼',           sub:'사랑이 가득한 일상!',            rare:'⭐⭐',
+   hint:'남자친구 이벤트 달성 + 매력 30↑\n이벤트에서 고백을 받아봐요!',
+   desc:'하랑이는 사랑하는 사람을 만나 행복한 가정을 꾸렸어요!\n작지만 따뜻한 행복이 가득한 삶을 살고 있답니다 💕',
+   cond:function(g){return g.hasBoyfriend&&g.stats.charm>=30;}},
+
+  // ─── 히든 엔딩 ───────────────────────────
+  {id:'e_goddess',   icon:'🌈', name:'신이 되었다',           sub:'전설이 된 하랑이',               rare:'🌟 히든',
+   hint:'[히든] 총 스탯 380↑, 성품 55↑, 신앙심 45↑\n모든 스탯을 골고루 키워야 해요!',
+   desc:'모든 스탯이 극한까지 올라간 하랑이는 인간의 경계를 초월했습니다.\n신화 속 존재가 되어 세상을 수호하는 전설이 되었어요.',
+   cond:function(g){var t=0;for(var k in g.stats)t+=g.stats[k];return t>=380&&g.stats.morality>=55&&g.stats.faith>=45;}},
+
+  {id:'e_hero',      icon:'⚡', name:'세상을 구한 영웅',      sub:'전설 속 영웅',                   rare:'🌟 히든',
+   hint:'[히든] 체력 50↑, 지구력 50↑, 성품 48↑, 지능 42↑\n신체+정신 균형 성장!',
+   desc:'완벽한 신체와 정신을 갖춘 하랑이는 위기의 순간 세상을 구했습니다.\n전설 속 영웅이 실존했던 거예요.',
+   cond:function(g){return g.stats.hp>=50&&g.stats.stamina>=50&&g.stats.morality>=48&&g.stats.intel>=42;}},
+
+  {id:'e_witch',     icon:'🔮', name:'마법사',                sub:'신비로운 마법사',                rare:'🌟 히든',
+   hint:'[히든] 지능 55↑, 예술성 50↑, 신앙심 35↑\n지식+예술+신비를 함께 키워봐요!',
+   desc:'하랑이는 고대 마법서를 발견하고 진짜 마법을 익혔습니다.\n신비로운 마법사로서 새로운 세계를 탐험하고 있어요.',
+   cond:function(g){return g.stats.intel>=55&&g.stats.art>=50&&g.stats.faith>=35;}},
+
+  {id:'e_timetravel',icon:'⏳', name:'시간여행자',            sub:'시간을 넘나드는 존재',            rare:'🌟 히든',
+   hint:'[히든] 총 스탯 360↑, 지능 60↑\n극한의 지식을 쌓아보세요!',
+   desc:'극한의 지능을 가진 하랑이는 시간의 흐름을 이해하게 되었습니다.\n과거와 미래를 자유롭게 여행하는 시간여행자가 되었어요.',
+   cond:function(g){var t=0;for(var k in g.stats)t+=g.stats[k];return t>=360&&g.stats.intel>=60;}},
+
+  {id:'e_perfect',   icon:'💎', name:'완벽한 하랑이',         sub:'모든 것을 이룬 존재',             rare:'🌟 히든',
+   hint:'[히든] 모든 스탯 55↑\n매달 집중적으로 골고루 성장해야 해요!',
+   desc:'모든 스탯이 완벽하게 성장한 하랑이! 어떤 길을 걸어도 빛나는 존재가 되었습니다.\n전설이 된 하랑이를 축하해요!',
+   cond:function(g){
+     for(var i=0;i<SD.length;i++){if((g.stats[SD[i].key]||0)<55)return false;}
+     return true;
+   }},
+
+  // ─── 기본 엔딩 (항상 마지막) ─────────────
+  {id:'e_normal',    icon:'😊', name:'평범하지만 행복한 하랑이',sub:'소소한 행복의 달인!',           rare:'⭐',
+   hint:'어떤 길을 걸어도 괜찮아요. 조건 없이 볼 수 있어요 😊',
+   desc:'화려하지는 않지만, 하랑이는 매일매일 작은 행복을 찾으며 살아가요.\n이것도 정말 멋진 인생이랍니다! 오늘도 하랑이는 웃고 있어요 😊',
+   cond:function(g){return true;}}
 ];
 
+// ── 번아웃 배드 엔딩 ──────────────────────────
 var BAD_ENDING = {
-  id:'e_burnout_end', name:'번아웃... 그래도 괜찮아', icon:'💤', rare:'숨겨진 엔딩',
-  hint:'스트레스 관리를 잘 해봐요. 쉬는 것도 중요해요. (스트레스 95↑ + 체력 8↓ 이하)',
-  desc:'1년 내내 무리했던 하랑이는 결국 완전히 지쳐버렸습니다. 하지만 이 경험이 소중한 교훈이 되었어요. 천천히, 자신의 속도로 다시 시작하는 하랑이를 응원해요.'
+  id:'e_burnout_end', name:'번아웃... 그래도 괜찮아',
+  icon:'💤', rare:'숨겨진 엔딩',
+  hint:'스트레스 관리를 잘 해봐요. (스트레스 95↑ + 체력 8↓)',
+  desc:'1년 내내 무리했던 하랑이는 결국 완전히 지쳐버렸습니다.\n하지만 이 경험이 소중한 교훈이 되었어요.\n천천히, 자신의 속도로 다시 시작하는 하랑이를 응원해요.'
 };
 
 // ══════════════════════════════════════════
 //  유틸
 // ══════════════════════════════════════════
-function getAvatar(g) {
-  if (!g) return '👧';
-  if (g.hasBoyfriend)             return '😍';
-  if (g.stress >= 85)             return '😵';
-  if (g.stress >= 70)             return '😵\u200d💫';
-  if (g.ailment==='hospitalized') return '🤒';
-  if (g.ailment==='sick')         return '😷';
-  if (g.ailment==='princess')     return '🥰';
-  if (g.ailment==='burnout')      return '😩';
-  if (g.ailment==='shy')          return '😶';
-  if (g.ailment==='fight')        return '😤';
-  var hp = g.stats.hp || 0;
-  var ch = g.stats.charm || 0;
-  if (hp >= 70 && ch >= 60) return '😄';
-  if (hp >= 50)             return '🙂';
-  if (hp >= 30)             return '😐';
+var MN = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+var SMAX = 120;
+var DQ = [], DI = 0;
+
+function clamp(v,mn,mx){return Math.max(mn,Math.min(mx,v));}
+
+function getAvatar(g){
+  if(!g) return '👧';
+  if(g.hasBoyfriend)              return '😍';
+  if(g.stress>=85)                return '😵';
+  if(g.stress>=70)                return '😵‍💫';
+  if(g.ailment==='hospitalized')  return '🤒';
+  if(g.ailment==='sick')          return '😷';
+  if(g.ailment==='princess')      return '🥰';
+  if(g.ailment==='burnout')       return '😩';
+  if(g.ailment==='shy')           return '😶';
+  if(g.ailment==='fight')         return '😤';
+  var hp=g.stats.hp||0, ch=g.stats.charm||0;
+  if(hp>=70&&ch>=60) return '😄';
+  if(hp>=50)         return '🙂';
+  if(hp>=30)         return '😐';
   return '😟';
 }
 
-function getCharSub(g) {
-  if (!g) return '';
-  if (g.hasBoyfriend)                   return '💕 남자친구 생김!';
-  if (g.stress >= 85)                   return '🤯 극한의 스트레스...';
-  if (g.stress >= 70)                   return '많이 지쳐있어요';
-  if (g.ailment && AILMENTS[g.ailment]) return AILMENTS[g.ailment].name;
-  if (g.stats.hp >= 70)                 return '💪 컨디션 최고!';
-  if (g.stats.hp >= 40)                 return '😊 기분 좋음';
+function getCharSub(g){
+  if(!g) return '';
+  if(g.hasBoyfriend)                   return '💕 남자친구 생김!';
+  if(g.stress>=85)                     return '🤯 극한의 스트레스...';
+  if(g.stress>=70)                     return '많이 지쳐있어요';
+  if(g.ailment&&AILMENTS[g.ailment])   return AILMENTS[g.ailment].name;
+  if(g.stats.hp>=70)                   return '💪 컨디션 최고!';
+  if(g.stats.hp>=40)                   return '😊 기분 좋음';
   return '좀 피곤해요';
 }
 
-function getStatName(key) {
-  for (var i=0; i<SD.length; i++) { if (SD[i].key===key) return SD[i].name; }
+function getStatName(key){
+  for(var i=0;i<SD.length;i++){if(SD[i].key===key)return SD[i].name;}
   return key;
 }
 
-function getRandLine(arr) {
-  if (!arr || !arr.length) return '';
+function getRandLine(arr){
+  if(!arr||!arr.length) return '';
   return arr[Math.floor(Math.random()*arr.length)];
+}
+
+// ★ 계절/바캉스 배너 업데이트
+function updateSeasonBanner(month, vacKey){
+  var img      = document.getElementById('seasonImg');
+  var fallback = document.getElementById('seasonFallback');
+  var banner   = document.getElementById('seasonBanner');
+  if(!img||!fallback||!banner) return;
+
+  var src = vacKey && VAC_IMGS[vacKey]
+    ? VAC_IMGS[vacKey]
+    : (SEASON_IMGS[month]||'imgs/img_spring_star.png');
+
+  img.style.display    = 'block';
+  fallback.style.display = 'none';
+  img.src = src;
+  img.onerror = function(){
+    this.style.display='none';
+    fallback.textContent = SEASON_FALLBACK[month]||'🌸';
+    fallback.style.display='block';
+  };
+}
+
+// ★ 아르바이트 이미지 배너 업데이트
+function updateWorkBanner(workKey){
+  var banner = document.getElementById('workImgBanner');
+  var img    = document.getElementById('workImg');
+  if(!banner||!img) return;
+  if(workKey && WORK_IMGS[workKey]){
+    img.src = WORK_IMGS[workKey];
+    img.onerror = function(){ banner.classList.remove('show'); };
+    banner.classList.add('show');
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+// ★ 스테이터스 접기/펼치기
+function toggleStatus(){
+  var body = document.getElementById('stbody');
+  var btn  = document.getElementById('stToggleBtn');
+  if(!body||!btn) return;
+  var open = body.classList.contains('open');
+  if(open){ body.classList.remove('open'); btn.classList.remove('open'); }
+  else    { body.classList.add('open');    btn.classList.add('open');    }
 }
 
 // ══════════════════════════════════════════
 //  게임 초기화
 // ══════════════════════════════════════════
-function newGame() {
+function newGame(){
   return {
     month:1, money:5000,
-    stats:{hp:25,charm:18,diligence:18,morality:18,humor:12,social:12,intel:18,art:12,stamina:18,faith:8},
+    stats:{hp:25,charm:18,diligence:18,morality:18,humor:12,
+           social:12,intel:18,art:12,stamina:18,faith:8},
     stress:0, ailment:null, ailmentMonths:0,
     workCount:{}, eduCount:{}, vacationCount:0,
-    hasBoyfriend:false, runawayCount:0,
-    monthSchedule:[null,null,null,null], selectingWeek:0, pickerTab:'work',
+    hasBoyfriend:false,
+    monthSchedule:[null,null,null,null],
+    selectingWeek:0, pickerTab:'work',
     log:[]
   };
 }
@@ -701,771 +969,922 @@ function newGame() {
 // ══════════════════════════════════════════
 //  화면 전환
 // ══════════════════════════════════════════
-function goScreen(id) {
-  var all = document.querySelectorAll('.screen');
-  for (var i=0; i<all.length; i++) all[i].classList.remove('active');
-  var el = document.getElementById(id);
-  if (el) el.classList.add('active');
+function goScreen(id){
+  var all=document.querySelectorAll('.screen');
+  for(var i=0;i<all.length;i++) all[i].classList.remove('active');
+  var el=document.getElementById(id);
+  if(el) el.classList.add('active');
 }
 
-function confirmTitle() {
-  if (confirm('타이틀로 돌아갈까요? 저장하지 않으면 진행이 사라집니다.')) {
-    goScreen('st');
-    checkCont();
+function confirmTitle(){
+  if(confirm('타이틀로 돌아갈까요? 저장하지 않으면 진행이 사라집니다.')){
+    goScreen('st'); checkCont();
   }
 }
 
-function checkCont() {
-  var el = document.getElementById('btncont');
-  if (el) el.style.display = localStorage.getItem('harang_save') ? 'inline-block' : 'none';
+function checkCont(){
+  var el=document.getElementById('btncont');
+  if(el) el.style.display=localStorage.getItem('harang_save')?'inline-block':'none';
 }
 
 // ══════════════════════════════════════════
 //  저장 / 불러오기
 // ══════════════════════════════════════════
-function saveG() {
-  try {
-    localStorage.setItem('harang_save', JSON.stringify(G));
+function saveG(){
+  try{
+    localStorage.setItem('harang_save',JSON.stringify(G));
     showToast('💾 저장 완료!');
-  } catch(e) { showToast('저장 실패: '+e.message); }
+  }catch(e){showToast('저장 실패: '+e.message);}
 }
 
-function loadG() {
-  try {
-    var raw = localStorage.getItem('harang_save');
-    if (!raw) { alert('저장 데이터가 없어요!'); return; }
-    G = JSON.parse(raw);
+function loadG(){
+  try{
+    var raw=localStorage.getItem('harang_save');
+    if(!raw){alert('저장 데이터가 없어요!');return;}
+    G=JSON.parse(raw);
     goScreen('sg');
     renderAll();
-  } catch(e) { alert('데이터 오류: '+e.message); }
+  }catch(e){alert('데이터 오류: '+e.message);}
 }
 
-function startNew() {
-  if (localStorage.getItem('harang_save')) {
-    if (!confirm('새 게임을 시작하면 기존 저장이 사라집니다. 계속할까요?')) return;
+function startNew(){
+  if(localStorage.getItem('harang_save')){
+    if(!confirm('새 게임을 시작하면 기존 저장이 사라집니다. 계속할까요?')) return;
   }
-  G = newGame();
+  G=newGame();
   goScreen('sg');
   renderAll();
-  addLog('🌸 하랑이의 1년이 시작됩니다! 1월부터 시작해요.', 'event');
+  addLog('🌸 하랑이의 1년이 시작됩니다! 1월부터 시작해요.','event');
 }
 
 // ══════════════════════════════════════════
 //  전체 렌더링
 // ══════════════════════════════════════════
-function renderAll() {
-  if (!G) return;
+function renderAll(){
+  if(!G) return;
   renderTopBar();
   renderCharCard();
   renderStats();
   renderAilmentBanner();
   renderScheduleCard();
   renderLog();
+  updateSeasonBanner(G.month, null);
+  updateWorkBanner(null);
 }
 
-function renderTopBar() {
-  document.getElementById('uidate').textContent = '🗓 ' + MN[G.month-1];
-  document.getElementById('uimoney').textContent = '💰 ' + G.money.toLocaleString() + '원';
+function renderTopBar(){
+  document.getElementById('uidate').textContent  = '🗓 '+MN[G.month-1];
+  document.getElementById('uimoney').textContent = '💰 '+G.money.toLocaleString()+'원';
 }
 
-function renderCharCard() {
-  document.getElementById('cavt').textContent = getAvatar(G);
-  document.getElementById('csub').textContent = getCharSub(G);
-  var monoArr = ['오늘도 열심히 해볼까!','뭘 할까 고민 중이야~','파이팅!!','어떤 어른이 될까?','두근두근 설레~'];
+function renderCharCard(){
+  document.getElementById('cavt').textContent  = getAvatar(G);
+  document.getElementById('csub').textContent  = getCharSub(G);
+  var monoArr=['오늘도 열심히 해볼까!','뭘 할까 고민 중이야~','파이팅!!','어떤 어른이 될까?','두근두근 설레~'];
   document.getElementById('cmono').textContent = getRandLine(monoArr);
 }
 
-function renderStats() {
-  var grid = document.getElementById('stgrid');
-  if (!grid) return;
-  grid.innerHTML = '';
-  for (var i=0; i<SD.length; i++) {
-    var def = SD[i];
-    var val = Math.min(SMAX, Math.max(0, G.stats[def.key]||0));
-    var pct = Math.round(val/SMAX*100);
-    var row = document.createElement('div');
-    row.className = 'strow';
-    row.innerHTML =
+function renderStats(){
+  var grid=document.getElementById('stgrid');
+  if(!grid) return;
+  grid.innerHTML='';
+  for(var i=0;i<SD.length;i++){
+    var def=SD[i];
+    var val=Math.min(SMAX,Math.max(0,G.stats[def.key]||0));
+    var pct=Math.round(val/SMAX*100);
+    var row=document.createElement('div');
+    row.className='strow';
+    row.innerHTML=
       '<div class="stlb">'+def.name+'</div>'+
       '<div class="stbw"><div class="stb" style="width:'+pct+'%;background:'+def.color+'"></div></div>'+
       '<div class="stv">'+val+'</div>';
     grid.appendChild(row);
   }
-  var sp = Math.min(100, G.stress||0);
-  var ssb = document.getElementById('ssb');
-  if (ssb) ssb.style.width = sp+'%';
-  var ssv = document.getElementById('ssv');
-  if (ssv) ssv.textContent = sp;
+  var sp=Math.min(100,G.stress||0);
+  var ssb=document.getElementById('ssb');
+  if(ssb) ssb.style.width=sp+'%';
+  var ssv=document.getElementById('ssv');
+  if(ssv) ssv.textContent=sp;
 }
 
-function renderAilmentBanner() {
-  var b = document.getElementById('abanner');
-  if (!b) return;
-  if (G.ailment && AILMENTS[G.ailment]) {
-    b.textContent = AILMENTS[G.ailment].name+' — '+AILMENTS[G.ailment].desc+' ('+G.ailmentMonths+'달 남음)';
+function renderAilmentBanner(){
+  var b=document.getElementById('abanner');
+  if(!b) return;
+  if(G.ailment&&AILMENTS[G.ailment]){
+    b.textContent=AILMENTS[G.ailment].name+' — '+AILMENTS[G.ailment].desc+' ('+G.ailmentMonths+'달 남음)';
     b.classList.add('show');
   } else {
     b.classList.remove('show');
   }
 }
 
-function renderLog() {
-  var lc = document.getElementById('logcard');
-  if (!lc) return;
-  lc.innerHTML = '';
-  var logs = G.log || [];
-  var start = Math.max(0, logs.length-12);
-  for (var i=start; i<logs.length; i++) {
-    var d = document.createElement('div');
-    d.className = 'logi '+(logs[i].type||'');
-    d.textContent = logs[i].msg;
+function renderLog(){
+  var lc=document.getElementById('logcard');
+  if(!lc) return;
+  lc.innerHTML='';
+  var logs=G.log||[];
+  var start=Math.max(0,logs.length-12);
+  for(var i=start;i<logs.length;i++){
+    var d=document.createElement('div');
+    d.className='logi '+(logs[i].type||'');
+    d.textContent=logs[i].msg;
     lc.appendChild(d);
   }
-  lc.scrollTop = lc.scrollHeight;
+  lc.scrollTop=lc.scrollHeight;
 }
 
-function addLog(msg, type) {
-  if (!G) return;
-  G.log.push({msg:msg, type:type||''});
-  if (G.log.length > 80) G.log = G.log.slice(-80);
+function addLog(msg,type){
+  if(!G) return;
+  G.log.push({msg:msg,type:type||''});
+  if(G.log.length>80) G.log=G.log.slice(-80);
   renderLog();
 }
 
 // ══════════════════════════════════════════
-//  스케줄 카드 (단일 선언 — 중복 없음)
+//  스케줄 카드 렌더링
 // ══════════════════════════════════════════
-function renderScheduleCard() {
-  if (!G) return;
-  var schtit = document.getElementById('schtit');
-  if (schtit) schtit.textContent = '📅 ' + MN[G.month-1] + ' 스케줄을 짜보세요!';
+function renderScheduleCard(){
+  if(!G) return;
+  var sc=document.getElementById('schcard');
+  if(!sc) return;
 
-  if (G.ailment === 'hospitalized') {
-    var sc = document.getElementById('schcard');
-    if (sc) sc.innerHTML =
+  if(G.ailment==='hospitalized'){
+    sc.innerHTML=
       '<div style="text-align:center;padding:22px;color:#ff6b6b;font-weight:700;">'+
-      '🏥 입원 중입니다...<br>'+
+      '🏥 입원 중입니다... '+
       '<small style="color:#aaa;font-weight:400">이번 달은 쉬어야 해요.</small><br><br>'+
       '<button class="btn bp bs" onclick="skipHospital()">다음 달로 →</button>'+
       '</div>';
     return;
   }
+
+  // 입원 상태가 해제된 후 원래 HTML 구조 복원
+  if(!document.getElementById('schtit')){
+    sc.innerHTML=
+      '<div class="schtit" id="schtit"></div>'+
+      '<div class="mcal" id="mcal"></div>'+
+      '<div class="spick">'+
+        '<div class="sptit" id="sptit">1주차 일정을 선택하세요</div>'+
+        '<div class="sptabs">'+
+          '<button class="sptab active" id="ptw" onclick="switchTab(\'work\')">💼 알바</button>'+
+          '<button class="sptab" id="pte" onclick="switchTab(\'edu\')">📚 교육</button>'+
+          '<button class="sptab" id="ptr" onclick="switchTab(\'rest\')">🛋 휴식</button>'+
+        '</div>'+
+        '<div class="splist" id="splist"></div>'+
+      '</div>'+
+      '<div class="schsum" id="schsum">0 / 4주 선택됨</div>'+
+      '<div class="approw">'+
+        '<button class="btn bp bs" id="appbtn" onclick="approveSchedule()" disabled>📋 이달 스케줄 확정!</button>'+
+      '</div>';
+  }
+
+  var schtit=document.getElementById('schtit');
+  if(schtit) schtit.textContent='📅 '+MN[G.month-1]+' 스케줄을 짜보세요!';
+
   renderCalendar();
   renderPickerPanel();
   updateApproveBtn();
 }
 
-function renderCalendar() {
-  var cal = document.getElementById('mcal');
-  if (!cal) return;
-  cal.innerHTML = '';
-  for (var w=0; w<4; w++) {
-    var sch = G.monthSchedule[w];
-    var isSelecting = (w === G.selectingWeek);
-    var cls = 'wslot';
-    if (sch) cls += ' sel';
-    else if (isSelecting) cls += ' asel';
-    var slot = document.createElement('div');
-    slot.className = cls;
-    slot.setAttribute('data-week', w);
-    slot.onclick = (function(week){ return function(){ selectWeek(week); }; })(w);
-    if (sch) {
-      slot.innerHTML =
-        '<div class="wsnum">'+(w+1)+'주차</div>'+
-        '<div class="wsico">'+sch.icon+'</div>'+
-        '<div class="wsnm">'+sch.name+'</div>';
+function renderCalendar(){
+  var cal=document.getElementById('mcal');
+  if(!cal) return;
+  cal.innerHTML='';
+  for(var w=0;w<4;w++){
+    var sch=G.monthSchedule[w];
+    var isSel=(w===G.selectingWeek);
+    var slot=document.createElement('div');
+    slot.className='wslot'+(sch?' sel':'')+(isSel?' asel':'');
+    slot.onclick=(function(week){return function(){selectWeek(week);};})(w);
+    var numDiv=document.createElement('div');
+    numDiv.className='wsnum';
+    numDiv.textContent=(w+1)+'주차';
+    slot.appendChild(numDiv);
+    if(sch){
+      var icoDiv=document.createElement('div');
+      icoDiv.className='wsico';
+      icoDiv.textContent=sch.icon||'📌';
+      slot.appendChild(icoDiv);
+      var nmDiv=document.createElement('div');
+      nmDiv.className='wsnm';
+      nmDiv.textContent=sch.name||'';
+      slot.appendChild(nmDiv);
     } else {
-      slot.innerHTML =
-        '<div class="wsnum">'+(w+1)+'주차</div>'+
-        '<div class="wsico" style="font-size:14px;color:#ddd">＋</div>'+
-        '<div class="wsem">미선택</div>';
+      var emDiv=document.createElement('div');
+      emDiv.className='wsem';
+      emDiv.textContent='미선택';
+      slot.appendChild(emDiv);
     }
     cal.appendChild(slot);
   }
 }
 
-function selectWeek(w) {
-  G.selectingWeek = w;
+function selectWeek(w){
+  G.selectingWeek=w;
   renderCalendar();
-  var sptit = document.getElementById('sptit');
-  if (sptit) sptit.textContent = (w+1)+'주차 일정을 선택하세요';
-  renderPickerList(G.pickerTab);
-}
-
-function renderPickerPanel() {
-  var tab = G.pickerTab || 'work';
-  var tabs = ['work','edu','rest'];
-  var ids  = ['ptw','pte','ptr'];
-  for (var i=0; i<tabs.length; i++) {
-    var el = document.getElementById(ids[i]);
-    if (el) el.className = 'sptab'+(tabs[i]===tab?' active':'');
-  }
-  var sptit = document.getElementById('sptit');
-  if (sptit) sptit.textContent = (G.selectingWeek+1)+'주차 일정을 선택하세요';
-  renderPickerList(tab);
-  updateSummary();
-}
-
-function switchTab(tab) {
-  G.pickerTab = tab;
+  var sptit=document.getElementById('sptit');
+  if(sptit) sptit.textContent=(w+1)+'주차 일정을 선택하세요';
   renderPickerPanel();
 }
 
-function renderPickerList(tab) {
-  var list = document.getElementById('splist');
-  if (!list) return;
-  list.innerHTML = '';
-  var items = [];
-  if (tab==='work') items = getWorkList(G.month);
-  else if (tab==='edu') items = EDU;
-  else items = getRestList(G.month);
+function switchTab(tab){
+  G.pickerTab=tab;
+  var tabs=['work','edu','rest'];
+  var ids=['ptw','pte','ptr'];
+  for(var i=0;i<tabs.length;i++){
+    var el=document.getElementById(ids[i]);
+    if(el) el.classList.toggle('active',tabs[i]===tab);
+  }
+  renderPickerPanel();
+}
 
-  for (var i=0; i<items.length; i++) {
-    var item = items[i];
-    var canAfford = true;
-    if (tab==='edu'||tab==='rest') canAfford = G.money >= (item.cost||0);
-    var rightText = '';
-    if (tab==='work') rightText = '+'+item.reward.toLocaleString()+'원';
-    else if (tab==='edu') rightText = '-'+item.cost.toLocaleString()+'원';
-    else rightText = item.cost>0 ? '-'+item.cost.toLocaleString()+'원' : '무료';
+function renderPickerPanel(){
+  var list=document.getElementById('splist');
+  if(!list) return;
+  list.innerHTML='';
+  var tab=G.pickerTab||'work';
+  var items=[];
 
-    var el = document.createElement('div');
-    el.className = 'spitem'+(canAfford?'':' lkit');
-    el.innerHTML =
+  if(tab==='work'){
+    for(var i=0;i<WORKS.length;i++){
+      var w=WORKS[i];
+      if(w.minMonth&&G.month<w.minMonth) continue;
+      items.push({
+        icon:getWorkIcon(w.key),
+        name:w.name,
+        info:'💰 '+w.pay.toLocaleString()+'원',
+        id:'work_'+w.key,
+        key:w.key,
+        type:'work',
+        data:w,
+        locked:false
+      });
+    }
+  } else if(tab==='edu'){
+    for(var i=0;i<EDUS.length;i++){
+      var e=EDUS[i];
+      var locked=(e.cost>0&&G.money<e.cost);
+      items.push({
+        icon:getEduIcon(e.key),
+        name:e.name,
+        info:e.cost>0?'💸 '+e.cost.toLocaleString()+'원':'무료',
+        id:'edu_'+e.key,
+        key:e.key,
+        type:'edu',
+        data:e,
+        locked:locked
+      });
+    }
+  } else {
+    for(var i=0;i<RESTS.length;i++){
+      var r=RESTS[i];
+      if(r.isVacation){
+        var vacItems=getAvailableVacations();
+        if(vacItems.length===0) continue;
+        items.push({
+          icon:'✈️',
+          name:'✈️ 바캉스 가기',
+          info:'여행지 선택',
+          id:'rest_vacation',
+          key:'vacation',
+          type:'rest',
+          data:r,
+          locked:false,
+          isVacation:true
+        });
+      } else {
+        var locked=(r.cost>0&&G.money<r.cost);
+        items.push({
+          icon:getRestIcon(r.key),
+          name:r.name,
+          info:r.cost>0?'💸 '+r.cost.toLocaleString()+'원':'무료',
+          id:'rest_'+r.key,
+          key:r.key,
+          type:'rest',
+          data:r,
+          locked:locked
+        });
+      }
+    }
+  }
+
+  for(var i=0;i<items.length;i++){
+    var it=items[i];
+    var div=document.createElement('div');
+    div.className='spitem'+(it.locked?' lkit':'');
+    div.onclick=(function(item){
+      return function(){
+        if(item.locked) return;
+        if(item.isVacation){showVacationPicker();}
+        else{pickSchedule(item);}
+      };
+    })(it);
+    div.innerHTML=
       '<div class="spil">'+
-      '<div class="spinm">'+item.icon+' '+item.name+'</div>'+
-      '<div class="spiin">'+item.desc+'</div>'+
+        '<div class="spinm">'+(it.icon?' ':'')+it.name+'</div>'+
+        '<div class="spiin">'+getEffectStr(it.data)+'</div>'+
       '</div>'+
-      '<div class="spir">'+rightText+'</div>';
-
-    if (canAfford) {
-      el.onclick = (function(it, tb){ return function(){ assignSchedule(it,tb); }; })(item, tab);
-    }
-    list.appendChild(el);
+      '<div class="spir">'+(it.locked?'💰부족':it.info)+'</div>';
+    list.appendChild(div);
   }
 }
 
-function assignSchedule(item, tab) {
-  var w = G.selectingWeek;
-  var copy = {};
-  for (var k in item) copy[k] = item[k];
-  copy.tabType = tab;
-  G.monthSchedule[w] = copy;
-  var monoLine = getRandLine(item.mono) || '';
-  document.getElementById('cmono').textContent = monoLine;
-  // 다음 미선택 주로 자동 이동
-  var next = -1;
-  for (var i=0; i<4; i++) {
-    if (G.monthSchedule[i] === null) { next = i; break; }
+function getAvailableVacations(){
+  var out=[];
+  for(var i=0;i<VACATIONS.length;i++){
+    var v=VACATIONS[i];
+    if(v.month.indexOf(G.month)>=0&&G.money>=v.cost) out.push(v);
   }
-  if (next >= 0) G.selectingWeek = next;
+  return out;
+}
+
+function showVacationPicker(){
+  var avail=getAvailableVacations();
+  if(avail.length===0){
+    showModal('✈️','이번 달엔 갈 수 있는 바캉스가 없어요!',
+      '계절이 맞지 않거나 돈이 부족해요 😢',
+      [{label:'확인',cls:'bp',fn:closeModal}]);
+    return;
+  }
+  var html='';
+  for(var i=0;i<avail.length;i++){
+    var v=avail[i];
+    html+='<div class="spitem" onclick="pickVacation(\''+v.key+'\')">'+
+      '<div class="spil">'+
+        '<div class="spinm">'+v.name+'</div>'+
+        '<div class="spiin">'+v.desc+'</div>'+
+      '</div>'+
+      '<div class="spir">💸 '+v.cost.toLocaleString()+'원</div>'+
+    '</div>';
+  }
+  var mbtns=document.getElementById('mbtns');
+  showModal('✈️','바캉스 여행지 선택','',
+    [{label:'취소',cls:'bg2',fn:closeModal}]);
+  var mdesc=document.getElementById('mdesc');
+  if(mdesc) mdesc.innerHTML=html;
+}
+
+function pickVacation(vacKey){
+  closeModal();
+  var vac=null;
+  for(var i=0;i<VACATIONS.length;i++){
+    if(VACATIONS[i].key===vacKey){vac=VACATIONS[i];break;}
+  }
+  if(!vac) return;
+  var item={
+    icon:'✈️',
+    name:vac.name,
+    id:'vac_'+vacKey,
+    key:vacKey,
+    type:'vacation',
+    data:vac
+  };
+  pickSchedule(item);
+  updateSeasonBanner(G.month, vacKey);
+}
+
+function pickSchedule(item){
+  G.monthSchedule[G.selectingWeek]=item;
+  if(G.selectingWeek<3) G.selectingWeek++;
   renderCalendar();
+  var sptit=document.getElementById('sptit');
+  if(sptit) sptit.textContent=(G.selectingWeek+1)+'주차 일정을 선택하세요';
+  renderPickerPanel();
   updateApproveBtn();
-  var sptit = document.getElementById('sptit');
-  if (sptit) sptit.textContent = (G.selectingWeek+1)+'주차 일정을 선택하세요';
-  renderPickerList(G.pickerTab);
 }
 
-function updateSummary() {
-  var filled = 0;
-  for (var i=0; i<4; i++) { if (G.monthSchedule[i]!==null) filled++; }
-  var el = document.getElementById('schsum');
-  if (el) el.textContent = filled+' / 4주 선택됨';
+function updateApproveBtn(){
+  var filled=0;
+  for(var i=0;i<4;i++){if(G.monthSchedule[i]!==null) filled++;}
+  var sum=document.getElementById('schsum');
+  if(sum) sum.textContent=filled+' / 4주 선택됨';
+  var btn=document.getElementById('appbtn');
+  if(btn) btn.disabled=(filled<4);
 }
 
-function updateApproveBtn() {
-  var filled = 0;
-  for (var i=0; i<4; i++) { if (G.monthSchedule[i]!==null) filled++; }
-  var btn = document.getElementById('appbtn');
-  if (btn) {
-    btn.disabled = (filled < 4);
-    btn.style.opacity = filled<4 ? '0.45' : '1';
+function getEffectStr(data){
+  if(!data) return '';
+  var parts=[];
+  var ef=data.effects||{};
+  for(var k in ef){
+    if(ef[k]>0) parts.push(getStatName(k)+' +'+ef[k]);
+    else if(ef[k]<0) parts.push(getStatName(k)+' '+ef[k]);
   }
-  updateSummary();
+  if(data.stress!==undefined){
+    if(data.stress>0) parts.push('스트레스 +'+data.stress);
+    else if(data.stress<0) parts.push('스트레스 '+data.stress);
+  }
+  if(data.stressMod!==undefined){
+    if(data.stressMod>0) parts.push('스트레스 +'+data.stressMod);
+    else if(data.stressMod<0) parts.push('스트레스 '+data.stressMod);
+  }
+  return parts.slice(0,3).join(' · ');
+}
+
+function getWorkIcon(key){
+  var icons={
+    convenience:'🏪',tutoring:'📖',cafe:'☕',delivery:'🛵',
+    cleaning:'🧹',flyer:'📢',farm:'🌾',babysit:'👶',
+    harvest:'🍅',picking:'🍇',youtuber:'📹',progamer:'🎮',housework:'🏠'
+  };
+  return icons[key]||'💼';
+}
+
+function getEduIcon(key){
+  var icons={
+    math:'📐',english:'🔤',art:'🎨',music:'🎵',taekwondo:'🥋',
+    book:'📚',volunteer:'💝',coding:'💻',speech:'🎤',science:'🔬',
+    beauty:'💄',choir:'🎼',ethics:'📖',church:'⛪',marathon:'🏃'
+  };
+  return icons[key]||'📚';
+}
+
+function getRestIcon(key){
+  var icons={
+    sleep:'😴',walk:'🚶',friend:'👫',movie:'🎬',game:'🎮',
+    cooking:'🍳',prayer:'🙏',shopping:'🛍',vacation:'✈️'
+  };
+  return icons[key]||'🛋';
 }
 
 // ══════════════════════════════════════════
-//  결과 계산
+//  스케줄 확정 & 결과 계산
 // ══════════════════════════════════════════
-function calcSuccessRate(sch) {
-  var base = 75;
-  if (G.ailment === 'burnout') base -= 20;
-  if (G.ailment === 'shy')     base -= 15;
-  if (G.stress >= 80)          base -= 15;
-  else if (G.stress >= 60)     base -= 8;
-  if (G.stats.hp >= 60)        base += 10;
-  else if (G.stats.hp < 20)    base -= 10;
-  return Math.min(95, Math.max(20, base));
+function approveSchedule(){
+  var filled=0;
+  for(var i=0;i<4;i++){if(G.monthSchedule[i]!==null) filled++;}
+  if(filled<4){showToast('4주 스케줄을 모두 선택해주세요!');return;}
+  DQ=[];DI=0;
+  buildDialogQueue();
+  showDlg();
 }
 
-function calcResult(sch) {
-  var roll = Math.random()*100;
-  var sr   = calcSuccessRate(sch);
-  var outcome = roll < sr*0.25 ? 'great' : roll < sr ? 'normal' : 'fail';
-  var mult = outcome==='great' ? 1.4 : outcome==='fail' ? 0.3 : 1.0;
-  if (G.ailment==='burnout') mult *= 0.5;
-  if (G.ailment==='shy')     mult *= 0.7;
-
-  var eff = {};
-  for (var k in (sch.effects||{})) eff[k] = Math.round((sch.effects[k]||0)*mult);
-  var stressDelta = Math.round((sch.stress||0) * (outcome==='fail'?1.3:outcome==='great'?0.7:1.0));
-  var moneyDelta  = 0;
-  if (sch.tabType==='work')
-    moneyDelta = outcome==='fail' ? Math.round(sch.reward*0.4) : outcome==='great' ? Math.round(sch.reward*1.3) : sch.reward;
-  else if (sch.tabType==='edu' || sch.tabType==='rest')
-    moneyDelta = -(sch.cost||0);
-
-  return {outcome:outcome, eff:eff, stressDelta:stressDelta, moneyDelta:moneyDelta};
-}
-
-// ══════════════════════════════════════════
-//  스탯 적용
-// ══════════════════════════════════════════
-function applyEff(eff) {
-  for (var k in eff) {
-    if (k==='hp'||k==='charm'||k==='diligence'||k==='morality'||k==='humor'||
-        k==='social'||k==='intel'||k==='art'||k==='stamina'||k==='faith') {
-      G.stats[k] = Math.min(SMAX, Math.max(0, (G.stats[k]||0)+(eff[k]||0)));
+function buildDialogQueue(){
+  for(var w=0;w<4;w++){
+    var sch=G.monthSchedule[w];
+    if(!sch) continue;
+    DQ.push({type:'week',week:w+1,sch:sch});
+  }
+  // 랜덤 이벤트
+  for(var i=0;i<EVENTS.length;i++){
+    if(Math.random()<EVENTS[i].prob){
+      DQ.push({type:'event',ev:EVENTS[i]});
+      break;
     }
   }
+  // 남자친구 이벤트
+  if(G.hasBoyfriend){
+    for(var i=0;i<BF_EVENTS.length;i++){
+      if(Math.random()<BF_EVENTS[i].prob){
+        DQ.push({type:'bfevent',ev:BF_EVENTS[i]});
+        break;
+      }
+    }
+  }
+  // 남자친구 생기는 이벤트
+  if(!G.hasBoyfriend&&G.stats.charm>=35&&G.month>=3&&Math.random()<0.08){
+    DQ.push({type:'boyfriend'});
+  }
+  // 상태이상 체크
+  if(G.stress>=75&&!G.ailment&&Math.random()<0.3){
+    var ails=['burnout','princess','shy'];
+    DQ.push({type:'ailment',ailKey:ails[Math.floor(Math.random()*ails.length)]});
+  }
+  // 월말 결산
+  DQ.push({type:'monthend'});
+}
+
+function calcWeekResult(sch){
+  var res={statChanges:{},moneyDelta:0,stressDelta:0,desc:''};
+  var data=sch.data||{};
+
+  if(sch.type==='work'){
+    res.moneyDelta=data.pay||0;
+    res.stressDelta=data.stress||0;
+    var ef=data.effects||{};
+    for(var k in ef) res.statChanges[k]=(res.statChanges[k]||0)+ef[k];
+    res.desc=data.desc||'열심히 일했어요!';
+    G.workCount[sch.key]=(G.workCount[sch.key]||0)+1;
+    updateWorkBanner(sch.key);
+  } else if(sch.type==='edu'){
+    res.moneyDelta=-(data.cost||0);
+    res.stressDelta=data.stress||0;
+    var ef=data.effects||{};
+    for(var k in ef) res.statChanges[k]=(res.statChanges[k]||0)+ef[k];
+    res.desc=data.desc||'열심히 공부했어요!';
+    G.eduCount[sch.key]=(G.eduCount[sch.key]||0)+1;
+  } else if(sch.type==='rest'){
+    res.moneyDelta=-(data.cost||0);
+    res.stressDelta=data.stress||0;
+    var ef=data.effects||{};
+    for(var k in ef) res.statChanges[k]=(res.statChanges[k]||0)+ef[k];
+    res.desc=data.desc||'푹 쉬었어요!';
+  } else if(sch.type==='vacation'){
+    res.moneyDelta=-(data.cost||0);
+    res.stressDelta=data.stressMod||0;
+    var ef=data.effects||{};
+    for(var k in ef) res.statChanges[k]=(res.statChanges[k]||0)+ef[k];
+    res.desc=data.desc||'신나는 바캉스!';
+    G.vacationCount=(G.vacationCount||0)+1;
+    updateSeasonBanner(G.month,sch.key);
+  }
+
+  // 상태이상 패널티
+  if(G.ailment&&AILMENTS[G.ailment]){
+    var mod=AILMENTS[G.ailment].statMod||{};
+    for(var k in mod) res.statChanges[k]=(res.statChanges[k]||0)+mod[k];
+    res.stressDelta+=AILMENTS[G.ailment].stressMod||0;
+  }
+
+  return res;
+}
+
+function applyWeekResult(res){
+  G.money=Math.max(0,G.money+(res.moneyDelta||0));
+  G.stress=clamp((G.stress||0)+(res.stressDelta||0),0,100);
+  for(var k in res.statChanges){
+    G.stats[k]=clamp((G.stats[k]||0)+res.statChanges[k],0,SMAX);
+  }
 }
 
 // ══════════════════════════════════════════
-//  토스트 / 모달
+//  대화창
 // ══════════════════════════════════════════
-function showToast(msg) {
-  var t = document.createElement('div');
-  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(60,40,80,.88);color:#fff;padding:10px 22px;border-radius:50px;font-size:13px;font-weight:700;z-index:9999;animation:fadeup .3s ease;pointer-events:none';
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); }, 2200);
+function showDlg(){
+  document.getElementById('dov').classList.add('show');
+  DI=0;
+  renderDlgEntry();
 }
-var _mCb = null;
-function showModal(ico, tit, desc, btns) {
-  document.getElementById('mico').textContent = ico;
-  document.getElementById('mtit').textContent = tit;
-  document.getElementById('mdesc').textContent = desc;
-  var mbtns = document.getElementById('mbtns');
-  mbtns.innerHTML = '';
-  for (var i=0; i<btns.length; i++) {
-    var b = document.createElement('button');
-    b.className = 'btn '+(i===0?'bp':'bu');
-    b.textContent = btns[i].text;
-    b.onclick = (function(cb){ return function(){ closeModal(); cb(); }; })(btns[i].cb);
-    mbtns.appendChild(b);
+
+function closeDlg(){
+  document.getElementById('dov').classList.remove('show');
+}
+
+function dlgNext(){
+  DI++;
+  if(DI>=DQ.length){
+    closeDlg();
+    return;
   }
-  document.getElementById('mov').classList.add('show');
+  renderDlgEntry();
 }
-function closeModal() { document.getElementById('mov').classList.remove('show'); }
+
+function renderDlgEntry(){
+  if(DI>=DQ.length){closeDlg();return;}
+  var entry=DQ[DI];
+
+  // 진행 도트
+  var prog=document.getElementById('dprog');
+  if(prog){
+    prog.innerHTML='';
+    for(var i=0;i<DQ.length;i++){
+      var dot=document.createElement('div');
+      dot.className='dpdot'+(i<DI?' dn':'')+(i===DI?' cu':'');
+      prog.appendChild(dot);
+    }
+  }
+
+  var dhlb=document.getElementById('dhlb');
+  var dwtit=document.getElementById('dwtit');
+  var dtxt=document.getElementById('dtxt');
+  var dtags=document.getElementById('dtags');
+  var dftr=document.getElementById('dftr');
+  var dface=document.getElementById('dface');
+
+  if(dhlb) dhlb.textContent=MN[G.month-1];
+  if(dtags) dtags.innerHTML='';
+  if(dftr) dftr.innerHTML='<button class="dnbtn" onclick="dlgNext()">다음 ▶</button>';
+
+  if(entry.type==='week'){
+    var res=calcWeekResult(entry.sch);
+    applyWeekResult(res);
+    renderTopBar();
+    renderStats();
+
+    if(dface) dface.textContent=getAvatar(G);
+    if(dwtit) dwtit.textContent=entry.week+'주차 — '+entry.sch.name;
+    if(dtxt)  dtxt.textContent=res.desc;
+
+    // 스탯 태그
+    if(dtags){
+      for(var k in res.statChanges){
+        if(res.statChanges[k]===0) continue;
+        var tag=document.createElement('span');
+        tag.className='dtag '+(res.statChanges[k]>0?'up':'dn2');
+        tag.textContent=getStatName(k)+' '+(res.statChanges[k]>0?'+':'')+res.statChanges[k];
+        dtags.appendChild(tag);
+      }
+      if(res.moneyDelta!==0){
+        var tag=document.createElement('span');
+        tag.className='dtag '+(res.moneyDelta>0?'up':'dn2');
+        tag.textContent=(res.moneyDelta>0?'+':'')+res.moneyDelta.toLocaleString()+'원';
+        dtags.appendChild(tag);
+      }
+      if(res.stressDelta!==0){
+        var tag=document.createElement('span');
+        tag.className='dtag '+(res.stressDelta>0?'ss':'up');
+        tag.textContent='스트레스 '+(res.stressDelta>0?'+':'')+res.stressDelta;
+        dtags.appendChild(tag);
+      }
+    }
+
+    addLog(entry.week+'주: '+entry.sch.name+' → '+res.desc,
+      res.moneyDelta>0?'good':(res.stressDelta>10?'bad':''));
+
+    // 아르바이트 이미지
+    if(entry.sch.type==='work') updateWorkBanner(entry.sch.key);
+    else updateWorkBanner(null);
+
+  } else if(entry.type==='event'){
+    var ev=entry.ev;
+    // 이벤트 적용
+    if(ev.effects){
+      for(var k in ev.effects) G.stats[k]=clamp((G.stats[k]||0)+ev.effects[k],0,SMAX);
+    }
+    if(ev.stress) G.stress=clamp(G.stress+ev.stress,0,100);
+    if(ev.moneyDelta) G.money=Math.max(0,G.money+ev.moneyDelta);
+    if(ev.ailment) setAilment(ev.ailment);
+    renderTopBar();renderStats();
+
+    if(dface) dface.textContent='✨';
+    if(dwtit) dwtit.textContent='이벤트! '+ev.name;
+    if(dtxt)  dtxt.textContent=ev.msg;
+    addLog('✨ '+ev.name,'event');
+
+  } else if(entry.type==='bfevent'){
+    var ev=entry.ev;
+    if(ev.effects){
+      for(var k in ev.effects) G.stats[k]=clamp((G.stats[k]||0)+ev.effects[k],0,SMAX);
+    }
+    if(ev.stress) G.stress=clamp(G.stress+ev.stress,0,100);
+    if(ev.breakup) G.hasBoyfriend=false;
+    renderTopBar();renderStats();
+
+    if(dface) dface.textContent='💕';
+    if(dwtit) dwtit.textContent='남자친구 이벤트';
+    if(dtxt)  dtxt.textContent=ev.msg;
+    addLog('💕 '+ev.msg,'event');
+
+  } else if(entry.type==='boyfriend'){
+    G.hasBoyfriend=true;
+    if(dface) dface.textContent='💘';
+    if(dwtit) dwtit.textContent='두근두근 고백!';
+    if(dtxt)  dtxt.textContent='하랑이에게 좋아한다고 고백한 친구가 생겼어요!\n남자친구가 생겼습니다 💕';
+    addLog('💘 남자친구가 생겼어요!','event');
+
+  } else if(entry.type==='ailment'){
+    setAilment(entry.ailKey);
+    var ail=AILMENTS[entry.ailKey];
+    if(dface) dface.textContent='😰';
+    if(dwtit) dwtit.textContent='상태이상 발생!';
+
+    // ★ 상태이상 이미지
+    var imgEl=document.getElementById('dtxt');
+    if(imgEl&&ail&&ail.img){
+      imgEl.innerHTML='<img src="'+ail.img+'" class="ailment-popup-img" '+
+        'onerror="this.style.display=\'none\'"'+
+        ' alt="'+ail.name+'"> '+ail.desc;
+    } else {
+      if(dtxt) dtxt.textContent=ail?ail.desc:'상태이상이 발생했어요...';
+    }
+    addLog('😰 '+( ail?ail.name:'상태이상')+'이 발생했어요!','bad');
+
+  } else if(entry.type==='monthend'){
+    // 월말 처리
+    finishMonth();
+    closeDlg();
+    return;
+  }
+}
+
+// ══════════════════════════════════════════
+//  상태이상
+// ══════════════════════════════════════════
+function setAilment(key){
+  G.ailment=key;
+  G.ailmentMonths=2;
+}
+
+function tickAilment(){
+  if(!G.ailment) return;
+  G.ailmentMonths--;
+  if(G.ailmentMonths<=0){
+    addLog('✅ '+( AILMENTS[G.ailment]?AILMENTS[G.ailment].name:'상태이상')+'이 회복됐어요!','good');
+    G.ailment=null;
+    G.ailmentMonths=0;
+  }
+}
+
+function skipHospital(){
+  G.ailment=null;
+  G.ailmentMonths=0;
+  addLog('🏥 퇴원했어요! 다시 시작해봐요.','good');
+  G.month++;
+  if(G.month>12){triggerEnding();return;}
+  G.monthSchedule=[null,null,null,null];
+  G.selectingWeek=0;
+  renderAll();
+}
+
+// ══════════════════════════════════════════
+//  월말 처리
+// ══════════════════════════════════════════
+function finishMonth(){
+  tickAilment();
+
+  // 스트레스 자연 감소
+  G.stress=clamp(G.stress-5,0,100);
+
+  // 번아웃 체크
+  if(G.stress>=95&&G.stats.hp<=8){
+    triggerBadEnding();
+    return;
+  }
+
+  // 다음 달로
+  G.month++;
+  if(G.month>12){
+    triggerEnding();
+    return;
+  }
+
+  // 초기화
+  G.monthSchedule=[null,null,null,null];
+  G.selectingWeek=0;
+  G.pickerTab='work';
+
+  updateSeasonBanner(G.month,null);
+  updateWorkBanner(null);
+  renderAll();
+  addLog('🗓 '+MN[G.month-1]+'이 시작됐어요!','event');
+  saveG();
+}
+
+// ══════════════════════════════════════════
+//  엔딩 처리
+// ══════════════════════════════════════════
+function triggerEnding(){
+  // 히든 엔딩 우선 체크
+  var chosen=null;
+  for(var i=0;i<ENDINGS.length;i++){
+    if(ENDINGS[i].cond(G)){chosen=ENDINGS[i];break;}
+  }
+  if(!chosen) chosen=ENDINGS[ENDINGS.length-1];
+
+  unlockEnding(chosen.id);
+  showEndingScreen(chosen);
+}
+
+function triggerBadEnding(){
+  unlockEnding(BAD_ENDING.id);
+  showEndingScreen(BAD_ENDING);
+}
+
+function showEndingScreen(ending){
+  goScreen('se');
+
+  var efw=document.getElementById('efw');
+  if(efw) efw.textContent=ending.rare&&ending.rare.indexOf('히든')>=0
+    ?'🌟✨🌟✨🌟':'🎉🎊🎉🎊🎉';
+
+  // 엔딩 이미지
+  var eimg=document.getElementById('ending-img');
+  if(eimg){
+    var src=ENDING_IMGS[ending.id]||'';
+    if(src){
+      eimg.src=src;
+      eimg.style.display='block';
+      eimg.onerror=function(){this.style.display='none';};
+    } else {
+      eimg.style.display='none';
+    }
+  }
+
+  var eico=document.getElementById('eico');
+  if(eico) eico.textContent=ending.icon||'🌟';
+
+  var etit=document.getElementById('etit');
+  if(etit) etit.textContent=ending.name||'엔딩';
+
+  var esub=document.getElementById('esub');
+  if(esub) esub.textContent=(ending.rare||'')+(ending.sub?' — '+ending.sub:'');
+
+  var edesc=document.getElementById('edesc');
+  if(edesc) edesc.textContent=ending.desc||'';
+
+  // 최종 스탯 요약
+  var estats=document.getElementById('estats');
+  if(estats){
+    var html='<p><strong>📊 최종 스탯</strong></p>';
+    for(var i=0;i<SD.length;i++){
+      var v=G.stats[SD[i].key]||0;
+      html+='<p>'+SD[i].name+': <strong>'+v+'</strong></p>';
+    }
+    html+='<p>💰 최종 잔액: <strong>'+G.money.toLocaleString()+'원</strong></p>';
+    html+='<p>😰 최종 스트레스: <strong>'+G.stress+'</strong></p>';
+    estats.innerHTML=html;
+  }
+}
 
 // ══════════════════════════════════════════
 //  앨범
 // ══════════════════════════════════════════
-function showAlbum() {
-  var allEndings = ENDINGS.concat([BAD_ENDING]);
-  var unlocked = JSON.parse(localStorage.getItem('harang_unlocked')||'[]');
-  document.getElementById('acnt').textContent = unlocked.length;
-  document.getElementById('atot').textContent = allEndings.length;
-  var grid = document.getElementById('agrid');
-  grid.innerHTML = '';
-  for (var i=0; i<allEndings.length; i++) {
-    var e = allEndings[i];
-    var isUnlocked = unlocked.indexOf(e.id) >= 0;
-    var card = document.createElement('div');
-    card.className = 'acard'+(isUnlocked?'':' lk');
-    if (isUnlocked) {
-      var imgSrc = ENDING_IMGS[e.id] || '';
-      card.innerHTML =
-        '<img src="'+imgSrc+'" class="acard-img" alt="'+e.name+'" onerror="this.style.display=\'none\'">'+
-        '<div class="en">'+e.name+'</div>'+
-        '<div class="er">'+e.rare+'</div>'+
-        '<div class="eh">'+e.hint+'</div>';
+function unlockEnding(id){
+  var arr=JSON.parse(localStorage.getItem('harang_unlocked')||'[]');
+  if(arr.indexOf(id)<0){
+    arr.push(id);
+    localStorage.setItem('harang_unlocked',JSON.stringify(arr));
+  }
+}
+
+function showAlbum(){
+  var allEndings=ENDINGS.concat([BAD_ENDING]);
+  var unlocked=JSON.parse(localStorage.getItem('harang_unlocked')||'[]');
+  var acnt=document.getElementById('acnt');
+  var atot=document.getElementById('atot');
+  if(acnt) acnt.textContent=unlocked.length;
+  if(atot) atot.textContent=allEndings.length;
+  var grid=document.getElementById('agrid');
+  if(!grid) return;
+  grid.innerHTML='';
+
+  for(var i=0;i<allEndings.length;i++){
+    var e=allEndings[i];
+    var isUnlocked=(unlocked.indexOf(e.id)>=0);
+    var card=document.createElement('div');
+    card.className='acard'+(isUnlocked?'':' lk');
+
+    if(isUnlocked){
+      var imgSrc=ENDING_IMGS[e.id]||'';
+      card.innerHTML=
+        (imgSrc
+          ?'<img src="'+imgSrc+'" class="acard-img" alt="'+e.name+'" onerror="this.style.display=\'none\'">'
+          :'<div class="acard-lock" style="background:#fff0f5;font-size:32px;">'+e.icon+'</div>')+
+        '<div class="en">'+e.icon+' '+e.name+'</div>'+
+        '<div class="er">'+(e.rare||'')+'</div>'+
+        '<div class="eh">'+(e.hint||'')+'</div>';
     } else {
-      card.innerHTML =
+      card.innerHTML=
         '<div class="acard-lock">🔒</div>'+
         '<div class="en" style="color:#ccc">???</div>'+
         '<div class="er">미해금</div>'+
-        '<div class="eh">'+e.hint+'</div>';
+        '<div class="eh">'+(e.hint||'')+'</div>';
     }
     grid.appendChild(card);
   }
   goScreen('sa');
 }
 
-function unlockEnding(id) {
-  var arr = JSON.parse(localStorage.getItem('harang_unlocked')||'[]');
-  if (arr.indexOf(id) < 0) {
-    arr.push(id);
-    localStorage.setItem('harang_unlocked', JSON.stringify(arr));
-  }
+// ══════════════════════════════════════════
+//  토스트
+// ══════════════════════════════════════════
+function showToast(msg){
+  var t=document.getElementById('toast');
+  if(!t) return;
+  t.textContent=msg;
+  t.style.display='block';
+  clearTimeout(t._tmr);
+  t._tmr=setTimeout(function(){t.style.display='none';},2200);
 }
 
 // ══════════════════════════════════════════
-//  스케줄 확정 & 대화 큐
+//  모달
 // ══════════════════════════════════════════
-function approveSchedule() {
-  var filled = 0;
-  for (var i=0; i<4; i++) { if (G.monthSchedule[i]!==null) filled++; }
-  if (filled < 4) { showToast('4주 스케줄을 모두 선택해주세요!'); return; }
-  DQ = [];
-  DI = 0;
-  buildQueue();
-  showDlg();
-}
-
-function buildQueue() {
-  for (var w=0; w<4; w++) {
-    var sch = G.monthSchedule[w];
-    if (!sch) continue;
-    var res = calcResult(sch);
-    DQ.push({type:'result', week:w+1, sch:sch, res:res});
-    if (sch.id === 'rest_vacation') {
-      var vev = VEVENTS[Math.floor(Math.random()*VEVENTS.length)];
-      DQ.push({type:'vacation', week:w+1, ev:vev});
-    }
-    if (sch.id === 'rest_friend' && Math.random() < 0.15) {
-      DQ.push({type:'fight', week:w+1});
-    }
-  }
-  // 4주차 이벤트
-  var w4ev = W4EVENTS[Math.floor(Math.random()*W4EVENTS.length)];
-  DQ.push({type:'week4', week:4, ev:w4ev});
-}
-
-// ══════════════════════════════════════════
-//  대화창
-// ══════════════════════════════════════════
-function showDlg() {
-  document.getElementById('dov').classList.add('show');
-  renderDlgEntry();
-}
-
-function closeDlg() {
-  document.getElementById('dov').classList.remove('show');
-  document.getElementById('dftr').innerHTML = '<button class="dnbtn" onclick="dlgNext()">다음 ▶</button>';
-}
-
-function dlgNext() {
-  DI++;
-  if (DI >= DQ.length) {
-    closeDlg();
-    finishMonth();
-    return;
-  }
-  renderDlgEntry();
-}
-
-function renderDlgEntry() {
-  if (DI >= DQ.length) {
-    closeDlg();
-    finishMonth();
-    return;
-  }
-  var entry = DQ[DI];
-  // 진행 도트
-  var prog = document.getElementById('dprog');
-  if (prog) {
-    prog.innerHTML = '';
-    for (var i=0; i<DQ.length; i++) {
-      var dot = document.createElement('div');
-      dot.className = 'dpdot'+(i<DI?' dn':i===DI?' cu':'');
-      prog.appendChild(dot);
+function showModal(ico,tit,desc,btns){
+  var mico=document.getElementById('mico');
+  var mtit=document.getElementById('mtit');
+  var mdesc=document.getElementById('mdesc');
+  var mbtns=document.getElementById('mbtns');
+  if(mico)  mico.textContent=ico||'✨';
+  if(mtit)  mtit.textContent=tit||'';
+  if(mdesc) mdesc.textContent=desc||'';
+  if(mbtns){
+    mbtns.innerHTML='';
+    for(var i=0;i<btns.length;i++){
+      (function(btn,idx){
+        var b=document.createElement('button');
+        b.className='btn '+(idx===0?'bp':'bu');
+        b.textContent=btn.label||btn.text||'확인';
+        b.onclick=function(){
+          closeModal();
+          if(btn.fn) btn.fn();
+          else if(btn.cb) btn.cb();
+        };
+        mbtns.appendChild(b);
+      })(btns[i],i);
     }
   }
-  document.getElementById('dface').textContent = getAvatar(G);
-  document.getElementById('dhlb').textContent = MN[G.month-1]+' '+entry.week+'주차';
-  // footer 초기화
-  document.getElementById('dftr').innerHTML = '<button class="dnbtn" onclick="dlgNext()">다음 ▶</button>';
-
-  if (entry.type==='result')   renderResultEntry(entry);
-  else if (entry.type==='vacation') renderVacationEntry(entry);
-  else if (entry.type==='fight')    renderFightEntry(entry);
-  else if (entry.type==='week4')    renderWeek4Entry(entry);
+  var mov=document.getElementById('mov');
+  if(mov) mov.classList.add('show');
 }
 
-function renderResultEntry(entry) {
-  var sch = entry.sch, res = entry.res;
-  var outcomeLabel = res.outcome==='great'?'🎉 대성공!! ':res.outcome==='fail'?'😢 실패... ':'😊 완료! ';
-  document.getElementById('dwtit').textContent = sch.icon+' '+entry.week+'주차: '+sch.name;
-  document.getElementById('dtxt').textContent = outcomeLabel+'\n'+getRandLine(sch.mono||[]);
-  var tags = document.getElementById('dtags');
-  tags.innerHTML = '';
-  for (var k in res.eff) {
-    if (res.eff[k]!==0) {
-      var span = document.createElement('span');
-      var sign = res.eff[k]>0?'+':'';
-      span.className = 'dtag '+(res.eff[k]>0?'up':'dn2');
-      span.textContent = getStatName(k)+' '+sign+res.eff[k];
-      tags.appendChild(span);
-    }
-  }
-  if (res.moneyDelta!==0) {
-    var ms = document.createElement('span');
-    ms.className = 'dtag '+(res.moneyDelta>0?'up':'mn');
-    ms.textContent = (res.moneyDelta>0?'+':'')+res.moneyDelta.toLocaleString()+'원';
-    tags.appendChild(ms);
-  }
-  if (res.stressDelta!==0) {
-    var ss = document.createElement('span');
-    ss.className = 'dtag ss';
-    ss.textContent = '스트레스 '+(res.stressDelta>0?'+':'')+res.stressDelta;
-    tags.appendChild(ss);
-  }
-  // 실제 적용
-  applyEff(res.eff);
-  G.stress = Math.min(100, Math.max(0, (G.stress||0)+res.stressDelta));
-  G.money  = Math.max(0, (G.money||0)+res.moneyDelta);
-  // 카운트 업데이트
-  if (sch.tabType==='work') {
-    G.workCount[sch.id] = (G.workCount[sch.id]||0)+1;
-    if (sch.id==='rest_vacation') G.vacationCount = (G.vacationCount||0)+1;
-  }
-  if (sch.tabType==='edu') G.eduCount[sch.id] = (G.eduCount[sch.id]||0)+1;
-  if (sch.id==='rest_vacation') G.vacationCount = (G.vacationCount||0)+1;
-  renderStats();
-  renderTopBar();
+function closeModal(){
+  var mov=document.getElementById('mov');
+  if(mov) mov.classList.remove('show');
 }
-
-function renderVacationEntry(entry) {
-  var ev = entry.ev;
-  document.getElementById('dwtit').textContent = ev.icon+' 바캉스 이벤트!';
-  document.getElementById('dtxt').textContent = ev.desc;
-  document.getElementById('dtags').innerHTML = '';
-  var ftr = document.getElementById('dftr');
-  ftr.innerHTML = '';
-  for (var i=0; i<ev.choices.length; i++) {
-    var ch = ev.choices[i];
-    var btn = document.createElement('button');
-    btn.className = 'dnbtn';
-    btn.textContent = ch.text;
-    btn.style.background = i===0?'var(--pk)':'var(--pu)';
-    btn.onclick = (function(choice){ return function(){
-      applyEff(choice.eff||{});
-      if (choice.sx) G.stress = Math.min(100,Math.max(0,G.stress+(choice.sx||0)));
-      if (choice.money) G.money += choice.money;
-      renderStats(); renderTopBar();
-      document.getElementById('dtxt').textContent = choice.result;
-      document.getElementById('dftr').innerHTML = '<button class="dnbtn" onclick="dlgNext()">다음 ▶</button>';
-    }; })(ch);
-    ftr.appendChild(btn);
-  }
-}
-
-function renderFightEntry(entry) {
-  document.getElementById('dwtit').textContent = '😤 친구와 싸움!';
-  document.getElementById('dtxt').textContent = '친구 집에서 놀다가 사소한 일로 싸우고 말았다... 관계에 금이 간 것 같아.';
-  document.getElementById('dtags').innerHTML = '<span class="dtag dn2">사교성 -15</span>';
-  G.stats.social = Math.max(0, (G.stats.social||0)-15);
-  if (!G.ailment) { G.ailment='fight'; G.ailmentMonths=2; }
-  renderStats();
-}
-
-function renderWeek4Entry(entry) {
-  var ev = entry.ev;
-  document.getElementById('dwtit').textContent = ev.icon+' '+ev.title;
-  document.getElementById('dtxt').textContent = ev.desc;
-  document.getElementById('dtags').innerHTML = '';
-  var ftr = document.getElementById('dftr');
-  ftr.innerHTML = '';
-  for (var i=0; i<ev.choices.length; i++) {
-    var ch = ev.choices[i];
-    var btn = document.createElement('button');
-    btn.className = 'dnbtn';
-    btn.textContent = ch.text;
-    btn.style.background = i===0?'var(--pk)':'var(--pu)';
-    btn.onclick = (function(choice, isHosp){ return function(){
-      applyEff(choice.eff||{});
-      G.stress = Math.min(100, Math.max(0, G.stress+(choice.sx||0)));
-      if (choice.money) G.money += choice.money;
-      if (choice.boyfriend) G.hasBoyfriend = true;
-      if (isHosp) { G.ailment='hospitalized'; G.ailmentMonths=1; }
-      renderStats(); renderTopBar(); renderCharCard();
-      document.getElementById('dtxt').textContent = choice.result;
-      document.getElementById('dftr').innerHTML = '<button class="dnbtn" onclick="dlgNext()">다음 ▶</button>';
-    }; })(ch, ev.isHospital||false);
-    ftr.appendChild(btn);
-  }
-}
-
-// ══════════════════════════════════════════
-//  월 마무리
-// ══════════════════════════════════════════
-function applyResult() {
-  // 상태이상 월별 효과
-  if (G.ailment==='sick')       G.stats.hp = Math.max(0,(G.stats.hp||0)-4);
-  if (G.ailment==='princess')   { G.stats.charm=Math.min(SMAX,(G.stats.charm||0)+1); G.stats.morality=Math.max(0,(G.stats.morality||0)-2); }
-  if (G.ailment==='confident')  { G.stats.diligence=Math.min(SMAX,(G.stats.diligence||0)+1); G.stats.morality=Math.max(0,(G.stats.morality||0)-1); }
-  if (G.ailment==='fight')      G.stats.social = Math.max(0,(G.stats.social||0)-15);
-}
-
-function finishMonth() {
-  applyResult();
-  // 상태이상 기간 감소
-  if (G.ailment && G.ailmentMonths > 0) {
-    G.ailmentMonths--;
-    if (G.ailmentMonths <= 0) {
-      addLog('✅ 상태이상 ['+AILMENTS[G.ailment].name+'] 회복!', 'good');
-      G.ailment = null;
-    }
-  }
-  checkStressAilment();
-  addLog('🗓 '+MN[G.month-1]+' 완료! 다음 달로 넘어가요.', 'event');
-  G.month++;
-  G.monthSchedule = [null,null,null,null];
-  G.selectingWeek = 0;
-  G.pickerTab = 'work';
-
-  if (G.month > 12) {
-    setTimeout(function(){ triggerEnding(); }, 400);
-    return;
-  }
-  rebuildSchCard();
-  renderAll();
-  showToast('🌸 '+MN[G.month-1]+'이 시작됐어요!');
-}
-
-function skipHospital() {
-  addLog('🏥 '+MN[G.month-1]+'은 입원으로 쉬었어요.', 'bad');
-  G.stats.hp = Math.min(SMAX, (G.stats.hp||0)+5);
-  if (G.ailmentMonths > 0) {
-    G.ailmentMonths--;
-    if (G.ailmentMonths <= 0) {
-      G.ailment = null;
-      addLog('✅ 퇴원했어요! 이제 활동할 수 있어요.', 'good');
-    }
-  }
-  G.month++;
-  G.monthSchedule = [null,null,null,null];
-  G.selectingWeek = 0;
-  G.pickerTab = 'work';
-  if (G.month > 12) {
-    setTimeout(function(){ triggerEnding(); }, 400);
-    return;
-  }
-  rebuildSchCard();
-  renderAll();
-  showToast('🌸 '+MN[G.month-1]+'이 시작됐어요!');
-}
-
-function rebuildSchCard() {
-  var sc = document.getElementById('schcard');
-  if (!sc) return;
-  sc.innerHTML =
-    '<div class="schtit" id="schtit"></div>'+
-    '<div class="mcal" id="mcal"></div>'+
-    '<div class="spick">'+
-      '<div class="sptit" id="sptit">1주차 일정을 선택하세요</div>'+
-      '<div class="sptabs">'+
-        '<button class="sptab active" id="ptw" onclick="switchTab(\'work\')">알바</button>'+
-        '<button class="sptab" id="pte" onclick="switchTab(\'edu\')">교육</button>'+
-        '<button class="sptab" id="ptr" onclick="switchTab(\'rest\')">휴식</button>'+
-      '</div>'+
-      '<div class="splist" id="splist"></div>'+
-    '</div>'+
-    '<div class="schsum" id="schsum">0 / 4주 선택됨</div>'+
-    '<div class="approw">'+
-      '<button class="btn bp bs" id="appbtn" onclick="approveSchedule()" disabled>📋 이달 스케줄 확정!</button>'+
-    '</div>';
-}
-
-function checkStressAilment() {
-  if (G.ailment) return;
-  if (G.stress >= 90) {
-    G.ailment = 'burnout'; G.ailmentMonths = 2;
-    addLog('🤯 번아웃이 왔어요! 효과가 반감됩니다.', 'bad');
-  } else if (G.stress >= 75 && Math.random() < 0.4) {
-    var list = ['sick','princess','shy'];
-    G.ailment = list[Math.floor(Math.random()*list.length)];
-    G.ailmentMonths = 1+(Math.random()<0.3?1:0);
-    addLog('⚠️ 상태이상 발생: '+AILMENTS[G.ailment].name, 'bad');
-  }
-}
-
-// ══════════════════════════════════════════
-//  엔딩 체크
-// ══════════════════════════════════════════
-function triggerEnding() {
-  // 번아웃 배드 엔딩
-  if (G.stress >= 95 && G.stats.hp <= 8) {
-    unlockEnding(BAD_ENDING.id);
-    showEndingScreen(BAD_ENDING);
-    return;
-  }
-  // 히든 엔딩 먼저
-  for (var i=0; i<ENDINGS.length; i++) {
-    var e = ENDINGS[i];
-    if (e.rare && e.rare.indexOf('히든') >= 0) {
-      if (e.cond(G)) { unlockEnding(e.id); showEndingScreen(e); return; }
-    }
-  }
-  // 일반 엔딩
-  var matched = [];
-  for (var j=0; j<ENDINGS.length; j++) {
-    var en = ENDINGS[j];
-    if (en.id==='e_normal') continue;
-    if (en.rare && en.rare.indexOf('히든') >= 0) continue;
-    if (en.cond(G)) matched.push(en);
-  }
-  if (matched.length > 0) {
-    var picked = matched[Math.floor(Math.random()*matched.length)];
-    unlockEnding(picked.id); showEndingScreen(picked); return;
-  }
-  // 기본 엔딩
-  var normal = null;
-  for (var n=0; n<ENDINGS.length; n++) { if (ENDINGS[n].id==='e_normal') { normal=ENDINGS[n]; break; } }
-  if (!normal) normal = ENDINGS[ENDINGS.length-1];
-  unlockEnding('e_normal');
-  showEndingScreen(normal);
-}
-
-function showEndingScreen(ending) {
-  document.getElementById('eico').textContent  = ending.icon;
-  document.getElementById('etit').textContent  = ending.name;
-  document.getElementById('esub').textContent  = ending.rare || '';
-  document.getElementById('edesc').textContent = ending.desc;
-  document.getElementById('efw').textContent   =
-    (ending.rare && ending.rare.indexOf('히든') >= 0) ? '🌟💎🌟💎🌟' : '🎉🎊🎉🎊🎉';
-
-  // 엔딩 이미지 처리
-  var imgEl = document.getElementById('ending-img');
-  var imgSrc = ENDING_IMGS[ending.id] || '';
-  if (imgSrc) {
-    imgEl.src = imgSrc;
-    imgEl.alt = ending.name;
-    imgEl.style.display = 'block';
-    imgEl.onerror = function(){ this.style.display='none'; };
-  } else {
-    imgEl.style.display = 'none';
-  }
-
-  // 최종 스탯
-  var statsEl = document.getElementById('estats');
-  statsEl.innerHTML = '<p style="font-weight:700;margin-bottom:6px">📊 최종 스테이터스</p>';
-  for (var i=0; i<SD.length; i++) {
-    var def = SD[i];
-    statsEl.innerHTML += '<p>'+def.name+': <b>'+(G.stats[def.key]||0)+'</b></p>';
-  }
-  statsEl.innerHTML += '<p>💰 최종 잔액: <b>'+G.money.toLocaleString()+'원</b></p>';
-  statsEl.innerHTML += '<p>😰 최종 스트레스: <b>'+(G.stress||0)+'</b></p>';
-
-  goScreen('se');
-  localStorage.removeItem('harang_save');
-}
-
-// ══════════════════════════════════════════
-//  초기화
-// ══════════════════════════════════════════
-window.addEventListener('load', function() {
+window.onload=function(){
   checkCont();
-  // 타이틀 이미지 오류 처리
-  var titleImg = document.querySelector('.tlogo-img');
-  if (titleImg) {
-    titleImg.addEventListener('error', function(){
-      this.style.display='none';
-      var fb = document.getElementById('tlogo-fallback');
-      if (fb) fb.style.display='block';
-    });
-  }
-});
+};
 </script>
 </body>
 </html>
