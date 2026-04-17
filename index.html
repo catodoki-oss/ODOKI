@@ -246,6 +246,15 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:var
       </div>
     </div>
 
+    <!-- ★ 스트레스 — 항상 표시 -->
+    <div class="stcard" style="padding:10px 14px;">
+      <div class="ssrow" style="margin-top:0;padding-top:0;border-top:none;">
+        <div class="sslb">😰 스트레스</div>
+        <div class="ssbw"><div class="ssb" id="ssb" style="width:0%"></div></div>
+        <div class="ssv" id="ssv">0</div>
+      </div>
+    </div>
+
     <!-- ★ 스테이터스 카드 — 기본 접힘 -->
     <div class="stcard">
       <div class="stcard-header" onclick="toggleStatus()">
@@ -254,11 +263,6 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:var
       </div>
       <div class="stbody" id="stbody">
         <div class="stgrid" id="stgrid"></div>
-        <div class="ssrow">
-          <div class="sslb">😰 스트레스</div>
-          <div class="ssbw"><div class="ssb" id="ssb" style="width:0%"></div></div>
-          <div class="ssv" id="ssv">0</div>
-        </div>
       </div>
     </div>
 
@@ -375,14 +379,14 @@ var SD = [
 ];
 
 // ══════════════════════════════════════════
-//  ★ 계절 이미지 매핑
+//  ★ 계절 이미지 매핑 (월별 다른 이미지)
 // ══════════════════════════════════════════
 var SEASON_IMGS = {
-  1:'imgs/img_winter_snow.png', 2:'imgs/img_winter_snow.png',
-  3:'imgs/img_spring_star.png', 4:'imgs/img_spring_star.png', 5:'imgs/img_spring_star.png',
-  6:'imgs/img_summer_heat.png', 7:'imgs/img_summer_heat.png', 8:'imgs/img_summer_heat.png',
-  9:'imgs/img_autumn_walk.png',10:'imgs/img_autumn_walk.png',11:'imgs/img_autumn_walk.png',
-  12:'imgs/img_winter_snow.png'
+  1:'imgs/img_jan.png',  2:'imgs/img_feb.png',
+  3:'imgs/img_mar.png',  4:'imgs/img_apr.png',  5:'imgs/img_may.png',
+  6:'imgs/img_jun.png',  7:'imgs/img_jul.png',  8:'imgs/img_aug.png',
+  9:'imgs/img_sep.png', 10:'imgs/img_oct.png', 11:'imgs/img_nov.png',
+  12:'imgs/img_dec.png'
 };
 var SEASON_FALLBACK = {
   1:'❄️',2:'❄️',3:'🌸',4:'🌸',5:'🌸',
@@ -415,6 +419,25 @@ var WORK_IMGS = {
   youtuber:    'imgs/img_work_youtuber.png',
   progamer:    'imgs/img_work_progamer.png',
   housework:   'imgs/img_work_housework.png'
+};
+
+// ★ 교육 이미지 매핑
+var EDU_IMGS = {
+  math:      'imgs/img_edu_math.png',
+  english:   'imgs/img_edu_english.png',
+  art:       'imgs/img_edu_art.png',
+  music:     'imgs/img_edu_music.png',
+  taekwondo: 'imgs/img_edu_taekwondo.png',
+  book:      'imgs/img_edu_book.png',
+  volunteer: 'imgs/img_edu_volunteer.png',
+  coding:    'imgs/img_edu_coding.png',
+  speech:    'imgs/img_edu_speech.png',
+  science:   'imgs/img_edu_science.png',
+  beauty:    'imgs/img_edu_beauty.png',
+  choir:     'imgs/img_edu_choir.png',
+  ethics:    'imgs/img_edu_ethics.png',
+  church:    'imgs/img_edu_church.png',
+  marathon:  'imgs/img_edu_marathon.png'
 };
 
 // ★ 상태이상 이미지 매핑
@@ -862,6 +885,100 @@ var BAD_ENDING = {
 var MN = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 var SMAX = 120;
 var DQ = [], DI = 0;
+
+// ★ 바캉스/주차 선택형 이벤트
+var VEVENTS = [
+  {icon:'🗑', title:'길가에 쓰레기가!', desc:'바캉스 중 날카로운 쓰레기가 떨어져 있다. 어떻게 할까?',
+   choices:[{text:'🙋 줍는다',result:'성품이 올랐다! 날카로운 것에 베여 체력이 떨어졌다...',eff:{morality:20,hp:-15}},
+            {text:'🚶 그냥 지나친다',result:'성품이 떨어졌다. 양심이 찔린다...',eff:{morality:-15}}]},
+  {icon:'🐔', title:'닭이 먼저일까, 알이 먼저일까?', desc:'여행 중 만난 철학자 할아버지가 묻는다.',
+   choices:[{text:'🐔 닭이 먼저!',result:'창조론적 관점이야! 지능이 올랐다.',eff:{intel:18,morality:8}},
+            {text:'🥚 알이 먼저!',result:'진화론적 사고야! 지능이 올랐다.',eff:{intel:18,humor:8}},
+            {text:'🤷 모르겠어요',result:'그게 정답이야! 겸손함이 지혜야! 성품이 크게 올랐다.',eff:{morality:22,intel:12}}]},
+  {icon:'🌿', title:'깻잎 논쟁!', desc:'식당에서 친구 남자친구가 친구 입에 깻잎을 떼어줬다. 어떻게 생각해?',
+   choices:[{text:'😡 당연히 이상하지!',result:'격렬한 토론! 사교성 올랐다.',eff:{social:12,humor:8},sx:8},
+            {text:'😊 그럴 수도 있지~',result:'이해심이 넓어! 매력 사교성 올랐다.',eff:{charm:18,social:12}},
+            {text:'🍽 깻잎이 뭔데요?',result:'모두가 폭소! 개그력 크게 올랐다.',eff:{humor:25,charm:8}}]},
+  {icon:'🌊', title:'파도가 너무 높아!', desc:'바다에서 파도가 갑자기 높아졌다. 저 멀리 어린아이가 위험해 보인다!',
+   choices:[{text:'🏊 뛰어들어 구한다',result:'아이를 구했다! 체력 감소, 성품 지구력 올랐다.',eff:{morality:25,stamina:15,hp:-20}},
+            {text:'📢 어른에게 알린다',result:'현명한 판단! 지능 성품 올랐다.',eff:{intel:18,morality:18}},
+            {text:'📸 일단 사진 찍는다',result:'SNS에 올렸다가 욕을 먹었다. 매력 떨어졌다.',eff:{charm:-20,humor:-8}}]},
+  {icon:'👻', title:'숙소에 귀신이?!', desc:'숙소에서 한밤중에 이상한 소리가 들린다...',
+   choices:[{text:'🔍 확인하러 간다',result:'알고 보니 옆방 사람이 야식을 먹고 있었다. 개그력 올랐다.',eff:{humor:22,hp:3}},
+            {text:'🙈 이불 뒤집어쓴다',result:'무서워서 밤새 못 잤다. 체력 떨어졌다.',eff:{hp:-18,stamina:-8}},
+            {text:'📱 귀신 퇴치 영상 튼다',result:'유튜브 알고리즘 덕분에 아침까지 봤다. 지능 올랐다.',eff:{intel:8,humor:18}}]},
+  {icon:'🍦', title:'아이스크림을 흘렸다!', desc:'힘들게 산 아이스크림을 땅에 떨어뜨렸다. 5초 룰을 적용할까?',
+   choices:[{text:'🙌 5초 룰! 줍는다',result:'배탈이 났다. 체력 감소 개그력 올랐다.',eff:{hp:-18,humor:18}},
+            {text:'😭 포기하고 새로 산다',result:'새 아이스크림은 더 맛있었다. 매력 올랐다.',eff:{charm:14,hp:4}},
+            {text:'🐶 강아지에게 준다',result:'강아지가 행복해했다. 성품 크게 올랐다.',eff:{morality:20,charm:8}}]}
+];
+
+// ★ 4주차 끝 특별 이벤트
+var W4EVENTS = [
+  {icon:'💌',title:'팬레터가 왔어요!',
+   desc:'하랑이에게 익명의 팬레터가 도착했다. 두근두근...',
+   choices:[
+     {text:'💗 설레며 읽는다',result:'매력과 사교성이 올랐다!',eff:{charm:12,social:10}},
+     {text:'😳 부끄러워서 안 읽는다',result:'서랍에 넣었다. 성품이 올랐다.',eff:{morality:8}}]},
+  {icon:'🎁',title:'길에서 지갑을 주웠어요!',
+   desc:'길을 걷다가 지갑을 발견했다. 안에 돈이 꽤 들어있는 것 같다...',
+   choices:[
+     {text:'🚔 경찰서에 가져간다',result:'주인을 찾아줬다. 성품 올랐다! 사례금도 받았다!',eff:{morality:20,social:5},money:3000},
+     {text:'💰 그냥 갖는다',result:'성품이 크게 떨어졌다. 양심이 찔려요.',eff:{morality:-25},sx:10}]},
+  {icon:'🐶',title:'강아지가 따라와요!',
+   desc:'집에 오는 길에 귀여운 강아지가 따라온다.',
+   choices:[
+     {text:'🏠 집에 데려간다',result:'강아지 친구가 생겼다! 체력 성품 올랐다.',eff:{hp:8,morality:15,charm:8}},
+     {text:'📢 주인을 찾아준다',result:'주인이 너무 고마워했다. 성품 사교성 올랐다.',eff:{morality:12,social:12}}]},
+  {icon:'🌧',title:'갑자기 폭우가!',
+   desc:'외출 중 갑자기 폭우가 쏟아졌다. 우산이 없는데...',
+   choices:[
+     {text:'🏃 뛰어서 집에 간다',result:'흠뻑 젖었다. 체력 감소 지구력 올랐다.',eff:{hp:-12,stamina:12}},
+     {text:'☕ 카페에서 기다린다',result:'독서를 했다. 지능 올랐다.',eff:{intel:10},sx:-8},
+     {text:'🤝 모르는 사람과 우산을 같이 쓴다',result:'사교성 매력 크게 올랐다.',eff:{social:18,charm:10}}]},
+  {icon:'💪',title:'체육대회가 열렸어요!',
+   desc:'동네 체육대회에 참가할 기회가 생겼다!',
+   choices:[
+     {text:'🏆 열심히 참가한다',result:'3등을 했다! 체력 지구력 사교성 올랐다.',eff:{hp:15,stamina:15,social:10}},
+     {text:'📸 구경만 한다',result:'응원을 열심히 했다. 사교성 올랐다.',eff:{social:8,humor:6}}]},
+  {icon:'🎨',title:'미술 공모전!',
+   desc:'지역 미술 공모전 참가 신청을 받고 있다.',
+   choices:[
+     {text:'🖌 열심히 그린다',result:'입선했다! 예술성 매력 올랐다.',eff:{art:20,charm:10}},
+     {text:'🤷 귀찮아서 패스',result:'나중에 후회했다.',eff:{diligence:-5}}]},
+  {icon:'🌟',title:'TV 오디션 공고!',
+   desc:'TV 오디션 프로그램 참가자를 모집하고 있다!',
+   choices:[
+     {text:'🎤 지원해본다',result:'예선 통과! 매력 예술성 사교성 올랐다.',eff:{charm:18,art:12,social:10}},
+     {text:'😅 자신 없어서 패스',result:'아쉽지만 다음 기회에...',eff:{humor:5}}]},
+  {icon:'📚',title:'도서관에서 신기한 책 발견!',
+   desc:'도서관에서 제목도 없는 신기한 책을 발견했다.',
+   choices:[
+     {text:'📖 읽어본다',result:'엄청난 지식을 얻었다! 지능 크게 올랐다.',eff:{intel:22,morality:8}},
+     {text:'🏃 무서워서 도망',result:'나중에 그 책이 희귀본이었다는 걸 알았다.',eff:{humor:10}}]},
+  {icon:'🤒',title:'갑자기 몸이 안 좋아요...',
+   desc:'이번 달 무리했는지 몸이 좋지 않다. 병원에 가야 할 것 같다...',
+   isHospital:true,
+   choices:[
+     {text:'🏥 병원에 간다',result:'진찰 결과 입원이 필요하다고 한다. 다음 달은 쉬어야 해요.',eff:{hp:-10}},
+     {text:'💊 약만 먹는다',result:'약을 먹었지만 상태가 더 나빠졌다. 결국 입원...',eff:{hp:-20}}]},
+  {icon:'💕',title:'두근두근... 고백을 받았어요!',
+   desc:'같은 반 친구가 하랑이에게 고백을 했다! 어떻게 할까?',
+   choices:[
+     {text:'💗 좋아해요!',result:'남자친구가 생겼다! 매력 사교성 올랐다.',eff:{charm:20,social:15},boyfriend:true},
+     {text:'😊 그냥 친구로 지내자',result:'친구 관계가 더 돈독해졌다. 사교성 올랐다.',eff:{social:12,morality:8}}]},
+  {icon:'🏆',title:'학교 대표로 뽑혔어요!',
+   desc:'선생님이 하랑이를 학교 대표로 추천하셨다!',
+   choices:[
+     {text:'💪 열심히 하겠습니다!',result:'대표로서 활약했다! 성실 사교성 자신감 올랐다.',eff:{diligence:18,social:12,charm:8}},
+     {text:'😅 부담돼서 사양한다',result:'선생님이 아쉬워하셨다. 스트레스 감소.',eff:{morality:5},sx:-5}]},
+  {icon:'🎪',title:'마을 축제가 열렸어요!',
+   desc:'동네에 큰 축제가 열렸다! 어떻게 즐길까?',
+   choices:[
+     {text:'🎤 무대에 올라간다',result:'관객들의 환호를 받았다! 매력 개그력 올랐다.',eff:{charm:18,humor:14,social:10}},
+     {text:'🍡 맛있는 것만 먹는다',result:'행복한 시간이었다. 체력 올랐다.',eff:{hp:10},sx:-10},
+     {text:'📷 사진 찍으러 다닌다',result:'예쁜 사진을 많이 찍었다. 예술성 올랐다.',eff:{art:14,charm:8}}]}
+];
 
 function clamp(v,mn,mx){return Math.max(mn,Math.min(mx,v));}
 
@@ -1420,11 +1537,30 @@ function approveSchedule(){
 }
 
 function buildDialogQueue(){
+  var hasVacThisMonth = false;
   for(var w=0;w<4;w++){
     var sch=G.monthSchedule[w];
     if(!sch) continue;
     DQ.push({type:'week',week:w+1,sch:sch});
+
+    // ★ 바캉스 주차: 이벤트 질문 (VEVENTS)
+    if(sch.type==='vacation'){
+      hasVacThisMonth = true;
+      var vev = VEVENTS[Math.floor(Math.random()*VEVENTS.length)];
+      DQ.push({type:'vevent', ev:vev});
+    } else {
+      // ★ 일반 주차 이후 소규모 랜덤 이벤트 (30% 확률)
+      if(Math.random()<0.30){
+        var wev = VEVENTS[Math.floor(Math.random()*VEVENTS.length)];
+        DQ.push({type:'vevent', ev:wev});
+      }
+    }
   }
+
+  // ★ 4주차 끝 특별 이벤트 (W4EVENTS)
+  var w4ev = W4EVENTS[Math.floor(Math.random()*W4EVENTS.length)];
+  DQ.push({type:'w4event', ev:w4ev});
+
   // 랜덤 이벤트
   for(var i=0;i<EVENTS.length;i++){
     if(Math.random()<EVENTS[i].prob){
@@ -1452,6 +1588,20 @@ function buildDialogQueue(){
   }
   // 월말 결산
   DQ.push({type:'monthend'});
+}
+
+function applyVevent(choice){
+  var eff=choice.eff||{};
+  for(var k in eff){
+    if(k==='hp'||k==='charm'||k==='diligence'||k==='morality'||k==='humor'||
+       k==='social'||k==='intel'||k==='art'||k==='stamina'||k==='faith'){
+      G.stats[k]=clamp((G.stats[k]||0)+eff[k],0,SMAX);
+    }
+  }
+  if(choice.money) G.money=Math.max(0,G.money+(choice.money||0));
+  if(choice.sx) G.stress=clamp(G.stress+(choice.sx||0),0,100);
+  if(choice.result) addLog('📌 '+choice.result,'event');
+  renderTopBar();renderStats();
 }
 
 function calcWeekResult(sch){
@@ -1555,6 +1705,13 @@ function renderDlgEntry(){
   if(dtags) dtags.innerHTML='';
   if(dftr) dftr.innerHTML='<button class="dnbtn" onclick="dlgNext()">다음 ▶</button>';
 
+  // ── 헬퍼: 다이얼로그 이미지 표시
+  var showDlgImg=function(src, altText){
+    if(!src) return;
+    var imgHtml='<img src="'+src+'" style="width:100%;max-height:180px;object-fit:cover;border-radius:12px;margin-bottom:8px;box-shadow:0 4px 14px rgba(0,0,0,.15)" onerror="this.style.display=\'none\'" alt="'+(altText||'')+'">';
+    return imgHtml;
+  }
+
   if(entry.type==='week'){
     var res=calcWeekResult(entry.sch);
     applyWeekResult(res);
@@ -1563,7 +1720,20 @@ function renderDlgEntry(){
 
     if(dface) dface.textContent=getAvatar(G);
     if(dwtit) dwtit.textContent=entry.week+'주차 — '+entry.sch.name;
-    if(dtxt)  dtxt.textContent=res.desc;
+
+    // ★ 이미지 표시 (아르바이트 / 교육 / 바캉스)
+    var imgSrc='';
+    if(entry.sch.type==='work' && WORK_IMGS[entry.sch.key]){
+      imgSrc=WORK_IMGS[entry.sch.key];
+    } else if(entry.sch.type==='edu' && EDU_IMGS[entry.sch.key]){
+      imgSrc=EDU_IMGS[entry.sch.key];
+    } else if(entry.sch.type==='vacation' && VAC_IMGS[entry.sch.key]){
+      imgSrc=VAC_IMGS[entry.sch.key];
+    }
+    if(dtxt){
+      dtxt.innerHTML=(imgSrc?showDlgImg(imgSrc,entry.sch.name):'')+
+        '<span style="white-space:pre-wrap">'+res.desc+'</span>';
+    }
 
     // 스탯 태그
     if(dtags){
@@ -1591,13 +1761,110 @@ function renderDlgEntry(){
     addLog(entry.week+'주: '+entry.sch.name+' → '+res.desc,
       res.moneyDelta>0?'good':(res.stressDelta>10?'bad':''));
 
-    // 아르바이트 이미지
+    // 아르바이트 배너
     if(entry.sch.type==='work') updateWorkBanner(entry.sch.key);
+    else if(entry.sch.type==='edu') updateWorkBanner(null); // 교육은 배너 숨김
     else updateWorkBanner(null);
+
+  // ★ 바캉스/일반 주차 선택형 이벤트
+  } else if(entry.type==='vevent'){
+    var ev=entry.ev;
+    if(dface) dface.textContent=ev.icon||'🎪';
+    if(dwtit) dwtit.textContent=ev.title;
+
+    // 바캉스 이벤트일 경우 현재 주차의 바캉스 이미지 표시
+    var curVacKey=null;
+    for(var w=0;w<4;w++){
+      if(G.monthSchedule[w]&&G.monthSchedule[w].type==='vacation'){
+        curVacKey=G.monthSchedule[w].key; break;
+      }
+    }
+    var evImgSrc = curVacKey && VAC_IMGS[curVacKey] ? VAC_IMGS[curVacKey] : '';
+    if(dtxt){
+      dtxt.innerHTML=(evImgSrc?showDlgImg(evImgSrc,'바캉스'):'')+
+        '<span style="white-space:pre-wrap">'+ev.desc+'</span>';
+    }
+
+    // 선택지 버튼
+    if(dftr){
+      dftr.innerHTML='';
+      for(var ci=0;ci<ev.choices.length;ci++){
+        (function(choice){
+          var b=document.createElement('button');
+          b.className='dnbtn';
+          b.style.cssText='margin:3px;font-size:12px;background:var(--pu)';
+          b.textContent=choice.text;
+          b.onclick=function(){
+            applyVevent(choice);
+            dlgNext();
+          };
+          dftr.appendChild(b);
+        })(ev.choices[ci]);
+      }
+    }
+
+  // ★ 4주차 끝 특별 이벤트 (W4EVENTS)
+  } else if(entry.type==='w4event'){
+    var ev=entry.ev;
+    if(dface) dface.textContent=ev.icon||'🌟';
+    if(dwtit) dwtit.textContent='이달의 이벤트! '+ev.title;
+    if(dtxt){
+      dtxt.innerHTML='<span style="white-space:pre-wrap">'+ev.desc+'</span>';
+    }
+
+    // 병원 이벤트 특수 처리
+    if(ev.isHospital){
+      if(dftr){
+        dftr.innerHTML='';
+        for(var ci=0;ci<ev.choices.length;ci++){
+          (function(choice){
+            var b=document.createElement('button');
+            b.className='dnbtn';
+            b.style.cssText='margin:3px;font-size:12px;background:'+(ci===0?'var(--pk)':'var(--pu)');
+            b.textContent=choice.text;
+            b.onclick=function(){
+              // 입원 처리
+              G.ailment='hospitalized';
+              G.ailmentMonths=1;
+              applyVevent(choice);
+              addLog('🏥 '+choice.result,'bad');
+              // 대화창 닫고 바로 다음 달 처리
+              closeDlg();
+              finishMonth();
+            };
+            dftr.appendChild(b);
+          })(ev.choices[ci]);
+        }
+      }
+      return;
+    }
+
+    // 남자친구 생기는 이벤트 특수 처리
+    var hasBfChoice = false;
+    for(var ci=0;ci<ev.choices.length;ci++){
+      if(ev.choices[ci].boyfriend) { hasBfChoice=true; break; }
+    }
+
+    if(dftr){
+      dftr.innerHTML='';
+      for(var ci=0;ci<ev.choices.length;ci++){
+        (function(choice){
+          var b=document.createElement('button');
+          b.className='dnbtn';
+          b.style.cssText='margin:3px;font-size:12px;background:'+(choice.boyfriend?'#ff6b9d':'var(--pu)');
+          b.textContent=choice.text;
+          b.onclick=function(){
+            if(choice.boyfriend) G.hasBoyfriend=true;
+            applyVevent(choice);
+            dlgNext();
+          };
+          dftr.appendChild(b);
+        })(ev.choices[ci]);
+      }
+    }
 
   } else if(entry.type==='event'){
     var ev=entry.ev;
-    // 이벤트 적용
     if(ev.effects){
       for(var k in ev.effects) G.stats[k]=clamp((G.stats[k]||0)+ev.effects[k],0,SMAX);
     }
@@ -1636,16 +1903,13 @@ function renderDlgEntry(){
     setAilment(entry.ailKey);
     var ail=AILMENTS[entry.ailKey];
     if(dface) dface.textContent='😰';
-    if(dwtit) dwtit.textContent='상태이상 발생!';
+    if(dwtit) dwtit.textContent='상태이상 발생! '+(ail?ail.name:'');
 
-    // ★ 상태이상 이미지
-    var imgEl=document.getElementById('dtxt');
-    if(imgEl&&ail&&ail.img){
-      imgEl.innerHTML='<img src="'+ail.img+'" class="ailment-popup-img" '+
-        'onerror="this.style.display=\'none\'"'+
-        ' alt="'+ail.name+'"> '+ail.desc;
-    } else {
-      if(dtxt) dtxt.textContent=ail?ail.desc:'상태이상이 발생했어요...';
+    // ★ 상태이상 이미지 + 텍스트
+    if(dtxt){
+      var ailImgSrc = ail&&ail.img ? ail.img : '';
+      dtxt.innerHTML=(ailImgSrc?showDlgImg(ailImgSrc,ail.name):'')+
+        '<span style="white-space:pre-wrap">'+(ail?ail.desc:'상태이상이 발생했어요...')+'</span>';
     }
     addLog('😰 '+( ail?ail.name:'상태이상')+'이 발생했어요!','bad');
 
