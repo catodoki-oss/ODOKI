@@ -473,12 +473,24 @@ var AILMENT_IMGS = {
   hospitalized: 'imgs/img_ail_hospitalized.png'   // 입원 (경로 예약)
 };
 
-// ── 바캉스 이미지 (세로형 1:2) ──
+
+// ── 바캉스 이미지 12종 ──
 var VACATION_IMGS = {
-  spring: 'imgs/img_vac_spring.png', // 봄 바캉스 (경로 예약)
-  summer: 'imgs/img_vac_summer.png', // 여름 바캉스 (경로 예약)
-  autumn: 'imgs/img_vac_autumn.png', // 가을 바캉스 (경로 예약)
-  winter: 'imgs/img_vac_winter.png'  // 겨울 바캉스 (경로 예약)
+  '🌸 벚꽃 명소': 'imgs/vac_cherry.png',
+  '🌿 봄 들판': 'imgs/vac_spring_field.png',
+  '🌷 튤립 정원': 'imgs/vac_tulip.png',
+
+  '🏖 해수욕장': 'imgs/vac_beach.png',
+  '🏔 계곡': 'imgs/vac_valley.png',
+  '🌊 워터파크': 'imgs/vac_waterpark.png',
+
+  '🍁 단풍 산': 'imgs/vac_maple.png',
+  '🍇 과수원 마을': 'imgs/vac_fruit.png',
+  '🌾 억새 평원': 'imgs/vac_grassland.png',
+
+  '⛷ 스키장': 'imgs/vac_ski.png',
+  '🏔 설경 명소': 'imgs/vac_snowmountain.png',
+  '🎄 크리스마스 마켓': 'imgs/vac_market.png'
 };
 
 // ── 팝업: 월 배너 ──
@@ -535,20 +547,38 @@ function closeAilPop() { document.getElementById('ailpop-ov').classList.remove('
 
 // ── 팝업: 바캉스 (세로형) ──
 var _vacPopCb = null;
+
 function showVacPop(month, destName, cb) {
-  var s = (month<=2||month===12)?'winter':(month<=5)?'spring':(month<=8)?'summer':'autumn';
-  var imgSrc = VACATION_IMGS[s] || '';
+
+  // 목적지 이름으로 이미지 찾기
+  var imgSrc = VACATION_IMGS[destName] || '';
+
   var el = document.getElementById('vacpop-img');
-  if (imgSrc) { el.src = imgSrc; el.style.display = 'block'; }
-  else { el.style.display = 'none'; }
+
+  if (imgSrc) {
+    el.src = imgSrc;
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+
   document.getElementById('vacpop-title').textContent = '✈️ 바캉스 출발!';
-  document.getElementById('vacpop-msg').textContent   = destName + ' 으로 바캉스를 떠나요!\n하랑이가 신나서 짐을 챙기고 있어요~';
+  document.getElementById('vacpop-msg').textContent =
+      destName + ' 으로 바캉스를 떠나요!\n하랑이가 신나서 짐을 챙기고 있어요~';
+
   _vacPopCb = cb || null;
+
   document.getElementById('vacpop-ov').classList.add('show');
 }
+
 function closeVacPop() {
   document.getElementById('vacpop-ov').classList.remove('show');
-  if (_vacPopCb) { var cb = _vacPopCb; _vacPopCb = null; cb(); }
+
+  if (_vacPopCb) {
+    var cb = _vacPopCb;
+    _vacPopCb = null;
+    cb();
+  }
 }
 
 var AILMENTS = {
